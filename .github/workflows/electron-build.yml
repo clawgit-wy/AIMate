@@ -58,27 +58,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-latest
-            platform: mac
-            arch: arm64
-          # electron-builder can cross-compile x64 on arm64
-          - os: macos-latest
-            platform: mac
-            arch: x64
-          - os: ubuntu-latest
-            platform: linux
-            arch: x64
           - os: windows-latest
             platform: win
             arch: x64
-          # windows-11-arm runners are in public preview on GitHub Actions.
-          # Using a native ARM64 runner avoids cross-compile toolchain wrangling
-          # for node-pty and lets bun/electron-builder pick up ARM64 prebuilds.
-          #
-          # Note: DigiCert KeyLocker (smctl) has no `smtools-win32-arm64`
-          # bundle, so the cloud-HSM re-sign cannot run on this runner. The
-          # ARM64 installer is cross-signed by the `sign-windows-arm64` job
-          # below, which runs on windows-latest (x64).
           - os: windows-11-arm
             platform: win
             arch: arm64
@@ -316,6 +298,13 @@ jobs:
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
+          # Skip if certificate secret is not configured
+          if [ -z "$MACOS_CERTIFICATE" ]; then
+            echo "::warning::MACOS_CERTIFICATE secret is not set, skipping code signing"
+            echo "SKIP_CODE_SIGNING=true" >> $GITHUB_ENV
+            exit 0
+          fi
+
           # Create temporary keychain
           KEYCHAIN_NAME="build.keychain"
           KEYCHAIN_PASSWORD="${KEYCHAIN_PASSWORD:-$(openssl rand -base64 32)}"
@@ -323,14 +312,30 @@ jobs:
           # Decode certificate
           echo "$MACOS_CERTIFICATE" | base64 --decode > certificate.p12
           
+          # Verify certificate file is valid
+          if ! file certificate.p12 | grep -q "PKCS\|data"; then
+            echo "::warning::Invalid certificate format, skipping code signing"
+            echo "SKIP_CODE_SIGNING=true" >> $GITHUB_ENV
+            rm -f certificate.p12
+            exit 0
+          fi
+          
           # Create keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
           security default-keychain -s "$KEYCHAIN_NAME"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
           
-          # Import certificate
-          security import certificate.p12 -k "$KEYCHAIN_NAME" -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign -T /usr/bin/security
+          # Import certificate with error handling
+          if ! security import certificate.p12 -k "$KEYCHAIN_NAME" -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign -T /usr/bin/security 2>&1; then
+            echo "::warning::Failed to import certificate (wrong password or corrupted file), skipping code signing"
+            echo "SKIP_CODE_SIGNING=true" >> $GITHUB_ENV
+            security delete-keychain "$KEYCHAIN_NAME" 2>/dev/null || true
+            rm -f certificate.p12
+            exit 0
+          fi
+          
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+          echo "SKIP_CODE_SIGNING=false" >> $GITHUB_ENV
           
           # Clean up
           rm certificate.p12
@@ -442,23 +447,12 @@ jobs:
           BUILD_ARCH: ${{ matrix.arch }}
         working-directory: packages/electron
         run: |
-          # --publish never on every platform: alpha/stable distribution is
-          # handled explicitly later in this workflow, and electron-builder
-          # must not create GitHub Releases on its own.
-          if [ "${{ matrix.platform }}" == "mac" ]; then
-            if [ "${{ github.ref_type }}" == "tag" ] || [ "${{ inputs.release }}" == "true" ]; then
-              npm run build:mac:notarized -- --${{ matrix.arch }} --mac dmg zip --publish never
-            else
-              npm run build:mac:local -- --${{ matrix.arch }} --mac dmg zip --publish never
-            fi
-          elif [ "${{ matrix.platform }}" == "win" ]; then
-            if [ "${{ matrix.arch }}" == "arm64" ]; then
-              npm run build:win:arm64 -- --publish never
-            else
-              npm run build:win -- --publish never
-            fi
+          # --publish never: GitHub Release creation is handled explicitly
+          # later in this workflow by the release job.
+          if [ "${{ matrix.arch }}" == "arm64" ]; then
+            npm run build:win:arm64 -- --publish never
           else
-            npm run build:linux -- --publish never
+            npm run build:win -- --publish never
           fi
         shell: bash
 
@@ -545,12 +539,9 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform }}-${{ matrix.arch }}
+          name: win-${{ matrix.arch }}
           path: |
-            packages/electron/release/*.dmg
-            packages/electron/release/*.zip
             packages/electron/release/*.exe
-            packages/electron/release/*.AppImage
             packages/electron/release/*.yml
             packages/electron/release/*.yaml
           retention-days: 7
@@ -614,7 +605,7 @@ jobs:
   release:
     needs: [build, sign-windows-arm64]
     runs-on: ubuntu-latest
-    if: github.ref_type == 'tag' || inputs.release == true || inputs.release == 'true'
+    if: github.ref_type == 'tag' || inputs.release == true || inputs.release == 'true' || github.ref == 'refs/heads/aimate-core'
     
     steps:
       - name: Checkout code
@@ -635,8 +626,8 @@ jobs:
       - name: Prepare release assets
         run: |
           mkdir -p release-files
-          # Copy binaries but NOT yml files (we'll regenerate those)
-          find release-artifacts -type f \( -name "*.dmg" -o -name "*.zip" -o -name "*.exe" -o -name "*.AppImage" \) -exec cp {} release-files/ \;
+          # Copy Windows binaries
+          find release-artifacts -type f \( -name "*.exe" \) -exec cp {} release-files/ \;
           ls -la release-files/
 
       - name: Generate update metadata with all architectures
@@ -644,9 +635,7 @@ jobs:
         run: |
           # Copy binaries to release folder so generate-update-yml.js can find them
           mkdir -p release
-          cp ../../release-files/*.dmg ../../release-files/*.zip release/ 2>/dev/null || true
           cp ../../release-files/*.exe release/ 2>/dev/null || true
-          cp ../../release-files/*.AppImage release/ 2>/dev/null || true
           ls -la release/
           # Generate yml files with all architectures present
           node build/generate-update-yml.js
@@ -728,9 +717,8 @@ jobs:
             echo ""
             echo "## Downloads"
             echo ""
-            echo "- **macOS**: Download the .dmg file"
-            echo "- **Windows**: Download the .exe file"
-            echo "- **Linux**: Download the .AppImage file"
+            echo "- **Windows x64**: Download `Nimbalyst-Windows-x64.exe`"
+            echo "- **Windows ARM64**: Download `Nimbalyst-Windows-arm64.exe`"
           } > release-files/GITHUB_RELEASE_BODY.md
 
           echo "Release notes generated"
@@ -759,10 +747,7 @@ jobs:
           aws s3 sync release-files/ s3://nimbalyst-alpha-updates-a7592ff2/ \
             --endpoint-url https://$CLOUDFLARE_ACCOUNT_ID.r2.cloudflarestorage.com \
             --exclude "*" \
-            --include "*.dmg" \
-            --include "*.zip" \
             --include "*.exe" \
-            --include "*.AppImage" \
             --include "*.yml" \
             --include "*.yaml" \
             --include "RELEASE_NOTES.md" \
@@ -782,18 +767,19 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-      # Tag pushes publish a visible GitHub prerelease so alpha-channel clients
-      # can discover it through the public releases feed. Re-running the
-      # workflow with create_github_release=true updates that same release and
-      # clears the prerelease flag, making it the stable release.
+      # Tag pushes and aimate-core branch pushes publish a visible GitHub
+      # prerelease so alpha-channel clients can discover it through the
+      # public releases feed. Re-running the workflow with
+      # create_github_release=true updates that same release and clears
+      # the prerelease flag, making it the stable release.
       - name: Publish GitHub Release
-        if: github.ref_type == 'tag'
+        if: github.ref_type == 'tag' || github.ref == 'refs/heads/aimate-core'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.get_version.outputs.VERSION }}
           name: Release ${{ steps.get_version.outputs.VERSION }}
           draft: false
-          prerelease: ${{ !(inputs.create_github_release == true || inputs.create_github_release == 'true') }}
+          prerelease: ${{ !(inputs.create_github_release == true || inputs.create_github_release == 'true') && github.ref_type != 'tag' }}
           files: release-files/*
           generate_release_notes: false
           body_path: release-files/GITHUB_RELEASE_BODY.md
