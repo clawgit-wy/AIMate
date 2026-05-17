@@ -558,7 +558,7 @@ jobs:
   sign-windows-arm64:
     needs: build
     runs-on: windows-latest
-    if: github.ref_type == 'tag' || inputs.release == true || inputs.release == 'true'
+    if: github.ref_type == 'tag' || inputs.release == true || inputs.release == 'true' || github.ref == 'refs/heads/aimate-core'
     env:
       DIGICERT_CLIENT_CERT_BASE64: ${{ secrets.DIGICERT_CLIENT_CERT_BASE64 }}
     steps:
@@ -779,7 +779,7 @@ jobs:
           tag_name: ${{ steps.get_version.outputs.VERSION }}
           name: Release ${{ steps.get_version.outputs.VERSION }}
           draft: false
-          prerelease: ${{ !(inputs.create_github_release == true || inputs.create_github_release == 'true') && github.ref_type != 'tag' }}
+          prerelease: false
           files: release-files/*
           generate_release_notes: false
           body_path: release-files/GITHUB_RELEASE_BODY.md
@@ -791,22 +791,8 @@ jobs:
           VERSION="${{ steps.get_version.outputs.VERSION }}"
           echo "✅ Release $VERSION complete!"
           echo ""
-          echo "📦 Alpha channel published on GitHub Releases as a prerelease"
+          echo "📦 Release published on GitHub Releases"
           echo "   URL: https://github.com/nimbalyst/nimbalyst/releases/tag/$VERSION"
-          echo ""
-          echo "🧪 Testing instructions:"
-          echo "   1. Open Nimbalyst Global Settings"
-          echo "   2. Go to Advanced Settings"
-          echo "   3. Command/Ctrl-click on 'Advanced Settings' title"
-          echo "   4. Select 'Alpha (Internal Testing)' from dropdown"
-          echo "   5. Save and restart the app"
-          echo "   6. Check for updates (should find version $VERSION)"
-          echo ""
-          if [[ "${LEGACY_ALPHA_TRANSITION_R2_UPLOAD}" == "true" ]]; then
-            echo "🔁 Legacy transition bridge also uploaded to R2:"
-            echo "   Bucket: nimbalyst-alpha-updates-a7592ff2"
-            echo "   URL: https://pub-4357a3345db7463580090984c0e4e2ba.r2.dev/"
-            echo ""
           fi
           if [[ "${{ inputs.create_github_release }}" == "true" ]]; then
             echo "🚀 GitHub release promoted from prerelease to stable:"
