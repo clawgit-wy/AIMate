@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { MaterialSymbol, copyToClipboard } from '@nimbalyst/runtime';
 import { buildShareUrl } from '../../../store/atoms/sessionShares';
+import { useI18n } from '../../../i18n';
 
 interface SharedLink {
   shareId: string;
@@ -20,6 +21,7 @@ type PanelState = 'loading' | 'loaded' | 'unauthenticated' | 'error';
  * Self-contained - fetches data via IPC, no props needed.
  */
 export const SharedLinksPanel: React.FC = () => {
+  const { t } = useI18n();
   const [shares, setShares] = useState<SharedLink[]>([]);
   const [shareKeys, setShareKeys] = useState<Record<string, string>>({});
   const [state, setState] = useState<PanelState>('loading');
@@ -173,10 +175,10 @@ export const SharedLinksPanel: React.FC = () => {
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <MaterialSymbol icon="link" size={32} className="text-[var(--nim-text-faint)] mb-3" />
           <p className="text-[0.8125rem] text-[var(--nim-text-muted)] mb-1">
-            No shared links yet.
+            {t('sharedLinks.noSharedLinks', 'No shared links yet.')}
           </p>
           <p className="text-[0.75rem] text-[var(--nim-text-faint)]">
-            Right-click a file or session and select "Share link" to create one.
+            {t('sharedLinks.createLinkHint', 'Right-click a file or session and select "Share link" to create one.')}
           </p>
         </div>
       )}
@@ -192,13 +194,13 @@ export const SharedLinksPanel: React.FC = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-[0.8125rem] font-medium text-[var(--nim-text)] truncate">
-                    {share.title || 'Untitled'}
+                    {share.title || t('sharedLinks.untitled', 'Untitled')}
                   </span>
                   <span className="shrink-0 px-1.5 py-0.5 rounded bg-[var(--nim-bg-hover)] text-[0.625rem] uppercase tracking-[0.04em] text-[var(--nim-text-faint)]">
                     {getShareKindLabel(share)}
                   </span>
                   <span className="shrink-0 text-[0.6875rem] text-[var(--nim-text-faint)]">
-                    {share.viewCount} {share.viewCount === 1 ? 'view' : 'views'}
+                    {share.viewCount} {share.viewCount === 1 ? t('sharedLinks.view', 'view') : t('sharedLinks.views', 'views')}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-[0.6875rem] text-[var(--nim-text-faint)]">
@@ -215,14 +217,14 @@ export const SharedLinksPanel: React.FC = () => {
               <div className="shrink-0 flex items-center gap-1">
                 <button
                   className="flex items-center justify-center w-7 h-7 rounded-md bg-transparent border-none text-[var(--nim-text-faint)] cursor-pointer transition-colors duration-150 hover:text-[var(--nim-text)] hover:bg-[var(--nim-bg-hover)]"
-                  title="Copy link"
+                  title={t('sharedLinks.copyLink', 'Copy link')}
                   onClick={() => handleCopyLink(share)}
                 >
                   <MaterialSymbol icon={copiedId === share.shareId ? 'check' : 'content_copy'} size={14} />
                 </button>
                 <button
                   className="flex items-center justify-center w-7 h-7 rounded-md bg-transparent border-none text-[var(--nim-text-faint)] cursor-pointer transition-colors duration-150 hover:text-[var(--nim-error)] hover:bg-[var(--nim-bg-hover)] disabled:opacity-50 disabled:cursor-default"
-                  title="Delete shared link"
+                  title={t('sharedLinks.deleteLink', 'Delete shared link')}
                   onClick={() => handleDelete(share)}
                   disabled={deletingId === share.shareId}
                 >

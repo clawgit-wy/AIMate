@@ -5,6 +5,7 @@ import type { SettingsCategory } from '../Settings/SettingsSidebar';
 import type { SettingsScope } from '../Settings/SettingsView';
 import { useFloatingMenu, FloatingPortal } from '../../hooks/useFloatingMenu';
 import { AlphaBadge } from '../common/AlphaBadge';
+import { t } from '../../i18n';
 
 interface StytchAuthState {
   isAuthenticated: boolean;
@@ -73,7 +74,7 @@ export function UserMenuPopover({ onNavigateSettings, onClose, isProjectConnecte
 
   const menuItems = [
     {
-      label: 'User Settings',
+      label: t('userMenu.userSettings', 'User Settings'),
       icon: 'person' as const,
       onClick: () => {
         onNavigateSettings('user');
@@ -81,7 +82,7 @@ export function UserMenuPopover({ onNavigateSettings, onClose, isProjectConnecte
       },
     },
     {
-      label: 'Project Settings',
+      label: t('userMenu.projectSettings', 'Project Settings'),
       icon: 'folder' as const,
       onClick: () => {
         onNavigateSettings('project');
@@ -90,7 +91,7 @@ export function UserMenuPopover({ onNavigateSettings, onClose, isProjectConnecte
     },
     // Show Team Settings when connected AND collaboration alpha is enabled
     ...(isProjectConnected && isCollaborationEnabled ? [{
-      label: 'Team Settings',
+      label: t('userMenu.teamSettings', 'Team Settings'),
       icon: 'group' as const,
       alpha: true,
       onClick: () => {

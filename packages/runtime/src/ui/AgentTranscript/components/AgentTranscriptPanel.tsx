@@ -90,6 +90,25 @@ interface AgentTranscriptPanelProps {
   phaseColumns?: Array<{ value: string; label: string; color: string }>;
   /** Callback when phase is changed */
   onSetPhase?: (phase: string | null) => void;
+  /** Optional: Translations for UI text (allows host app to provide localized strings) */
+  translations?: {
+    readyToAssist?: string;
+    webResearch?: string;
+    codeAnalysis?: string;
+    fileEditing?: string;
+    enterTaskBelow?: string;
+    thinking?: string;
+    waitingForComplete?: string;
+    noMatches?: string;
+    caseSensitive?: string;
+    caseInsensitive?: string;
+    showFullMessage?: string;
+    collapseMessage?: string;
+    viewResult?: string;
+    result?: string;
+    previousMatch?: string;
+    nextMatch?: string;
+  };
   // Note: Interactive widgets read their host from interactiveWidgetHostAtom(sessionId)
 }
 
@@ -133,6 +152,7 @@ const AgentTranscriptPanelComponent = React.forwardRef<
   currentPhase,
   phaseColumns,
   onSetPhase,
+  translations,
 }, ref) => {
   // Show floating actions if explicitly enabled, otherwise default to showing when sidebar is visible
   const shouldShowFloatingActions = showFloatingActions ?? !hideSidebar;
@@ -370,6 +390,7 @@ const AgentTranscriptPanelComponent = React.forwardRef<
           renderEmbeddedFile={renderEmbeddedFile}
           canEmbedFile={canEmbedFile}
           onSearchBarVisibilityChange={setSearchBarVisible}
+          translations={translations}
         />
 
         {/* Floating Actions - show based on showFloatingActions prop */}

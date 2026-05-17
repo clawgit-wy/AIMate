@@ -12,6 +12,7 @@ import React from 'react';
 import { MaterialSymbol } from '@nimbalyst/runtime';
 import type { AgentFileScopeMode } from '../../store/atoms/projectState';
 import { useFloatingMenu, FloatingPortal } from '../../hooks/useFloatingMenu';
+import { useI18n } from '../../i18n';
 
 interface FilesScopeDropdownProps {
   /** Current file scope mode */
@@ -39,18 +40,18 @@ interface FilesScopeDropdownProps {
 }
 
 /** Label mapping for scope modes */
-const SCOPE_MODE_LABELS: Record<AgentFileScopeMode, { title: string; description: string }> = {
+const SCOPE_MODE_LABELS: Record<AgentFileScopeMode, { titleKey: string; descriptionKey: string }> = {
   'current-changes': {
-    title: 'Uncommitted Session Edits',
-    description: 'Files edited by AI with uncommitted changes'
+    titleKey: 'filesScope.uncommittedSessionEdits',
+    descriptionKey: 'filesScope.uncommittedSessionEditsDesc'
   },
   'session-files': {
-    title: 'All Session Edits',
-    description: 'All files touched by AI'
+    titleKey: 'filesScope.allSessionEdits',
+    descriptionKey: 'filesScope.allSessionEditsDesc'
   },
   'all-changes': {
-    title: 'All Uncommitted Files',
-    description: 'All uncommitted files in repository'
+    titleKey: 'filesScope.allUncommittedFiles',
+    descriptionKey: 'filesScope.allUncommittedFilesDesc'
   }
 };
 
@@ -60,24 +61,26 @@ function getScopeContext(
   isWorktree: boolean,
   sessionCount: number,
   filterToCurrentSession: boolean,
-  worktreeName?: string
+  worktreeName?: string,
+  t?: (key: string, fallback?: string) => string
 ): string {
   if (mode === 'all-changes') {
     if (isWorktree && worktreeName) {
-      return `in worktree ${worktreeName}`;
+      return t ? t('filesScope.inWorktree', `in worktree ${worktreeName}`).replace('{name}', worktreeName) : `in worktree ${worktreeName}`;
     }
-    return isWorktree ? 'in this Worktree' : 'in this Workspace';
+    return t ? (isWorktree ? t('filesScope.inThisWorktree', 'in this Worktree') : t('filesScope.inThisWorkspace', 'in this Workspace')) : (isWorktree ? 'in this Worktree' : 'in this Workspace');
   }
 
   if (filterToCurrentSession) {
-    return 'in current Session';
+    return t ? t('filesScope.inCurrentSession', 'in current Session') : 'in current Session';
   }
 
   if (sessionCount > 1) {
-    return `in this Workstream (${sessionCount} sessions)`;
+    const text = t ? t('filesScope.inThisWorkstream', 'in this Workstream ({count} sessions)') : 'in this Workstream ({count} sessions)';
+    return text.replace('{count}', sessionCount.toString());
   }
 
-  return 'in this Session';
+  return t ? t('filesScope.inThisSession', 'in this Session') : 'in this Session';
 }
 
 export const FilesScopeDropdown: React.FC<FilesScopeDropdownProps> = ({
@@ -93,10 +96,11 @@ export const FilesScopeDropdown: React.FC<FilesScopeDropdownProps> = ({
   workstreamSessionCount,
   worktreeName,
 }) => {
+  const { t } = useI18n();
   const menu = useFloatingMenu({ placement: 'bottom-start' });
 
   const currentLabel = SCOPE_MODE_LABELS[fileScopeMode];
-  const contextSubtitle = getScopeContext(fileScopeMode, isWorktree, workstreamSessionCount, filterToCurrentSession, worktreeName);
+  const contextSubtitle = getScopeContext(fileScopeMode, isWorktree, workstreamSessionCount, filterToCurrentSession, worktreeName, t);
 
   return (
     <div className="files-scope-dropdown min-w-60">
@@ -113,7 +117,7 @@ export const FilesScopeDropdown: React.FC<FilesScopeDropdownProps> = ({
         <div className="files-scope-dropdown__title-row flex items-center gap-1 max-w-full">
           <MaterialSymbol icon="description" size={16} className="text-[var(--nim-text-muted)] shrink-0" />
           <span className="files-scope-dropdown__title text-sm font-medium text-[var(--nim-text)] truncate min-w-0">
-            {currentLabel.title}
+            {t(currentLabel.titleKey, currentLabel.titleKey)}
           </span>
           <MaterialSymbol
             icon="expand_more"
@@ -140,14 +144,16 @@ export const FilesScopeDropdown: React.FC<FilesScopeDropdownProps> = ({
             {/* Show Files section */}
             <div className="files-scope-dropdown__section px-3 py-2 border-b border-[var(--nim-border)]">
               <div className="files-scope-dropdown__section-header text-[10px] font-semibold text-[var(--nim-text-faint)] uppercase tracking-wide mb-1.5">
-                Show Files
+                {t('filesScope.showFiles', 'Show Files')}
               </div>
-              {(Object.entries(SCOPE_MODE_LABELS) as [AgentFileScopeMode, { title: string; description: string }][]).map(
-                ([mode, { title, description }]) => {
+              {(Object.entries(SCOPE_MODE_LABELS) as [AgentFileScopeMode, { titleKey: string; descriptionKey: string }][]).map(
+                ([mode, { titleKey, descriptionKey }]) => {
+                  const title = t(titleKey, titleKey);
+                  const baseDescription = t(descriptionKey, descriptionKey);
                   // Customize description for all-changes mode when in a worktree
                   const displayDescription = mode === 'all-changes' && isWorktree && worktreeName
-                    ? `All uncommitted files in worktree ${worktreeName}`
-                    : description;
+                    ? t('filesScope.allUncommittedInWorktree', `All uncommitted files in worktree {name}`).replace('{name}', worktreeName)
+                    : baseDescription;
 
                   return (
                     <label
@@ -181,7 +187,7 @@ export const FilesScopeDropdown: React.FC<FilesScopeDropdownProps> = ({
             {hasMultipleSessions && fileScopeMode !== 'all-changes' && (
               <div className="files-scope-dropdown__section px-3 py-2 border-b border-[var(--nim-border)]">
                 <div className="files-scope-dropdown__section-header text-[10px] font-semibold text-[var(--nim-text-faint)] uppercase tracking-wide mb-1.5">
-                  Scope
+                  {t('filesScope.scope', 'Scope')}
                 </div>
                 <label className="files-scope-dropdown__option flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-[var(--nim-bg-hover)]">
                   <input
@@ -192,7 +198,7 @@ export const FilesScopeDropdown: React.FC<FilesScopeDropdownProps> = ({
                     className="cursor-pointer"
                   />
                   <span className="text-xs text-[var(--nim-text)]">
-                    All sessions ({workstreamSessionCount})
+                    {t('filesScope.allSessions', 'All sessions ({count})').replace('{count}', workstreamSessionCount.toString())}
                   </span>
                 </label>
                 <label className="files-scope-dropdown__option flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-[var(--nim-bg-hover)]">
@@ -204,7 +210,7 @@ export const FilesScopeDropdown: React.FC<FilesScopeDropdownProps> = ({
                     className="cursor-pointer"
                   />
                   <span className="text-xs text-[var(--nim-text)]">
-                    Current session only
+                    {t('filesScope.currentSessionOnly', 'Current session only')}
                   </span>
                 </label>
               </div>
@@ -213,7 +219,7 @@ export const FilesScopeDropdown: React.FC<FilesScopeDropdownProps> = ({
             {/* Display section */}
             <div className="files-scope-dropdown__section px-3 py-2">
               <div className="files-scope-dropdown__section-header text-[10px] font-semibold text-[var(--nim-text-faint)] uppercase tracking-wide mb-1.5">
-                Display
+                {t('filesScope.display', 'Display')}
               </div>
               <label className="files-scope-dropdown__option flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-[var(--nim-bg-hover)]">
                 <input
@@ -222,7 +228,7 @@ export const FilesScopeDropdown: React.FC<FilesScopeDropdownProps> = ({
                   onChange={(e) => onGroupByDirectoryChange(e.target.checked)}
                   className="cursor-pointer"
                 />
-                <span className="text-xs text-[var(--nim-text)]">Group by directory</span>
+                <span className="text-xs text-[var(--nim-text)]">{t('filesScope.groupByDirectory', 'Group by directory')}</span>
               </label>
             </div>
           </div>

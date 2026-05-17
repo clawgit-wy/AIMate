@@ -31,6 +31,7 @@ import { setWindowModeAtom } from '../../store/atoms/windowMode';
 import { defaultAgentModelAtom } from '../../store/atoms/appSettings';
 import { ModelIdentifier } from '@nimbalyst/runtime/ai/server/types';
 import { store } from '../../store';
+import { useI18n } from '../../i18n';
 
 export type ViewMode = 'table' | 'kanban';
 
@@ -53,6 +54,7 @@ export const TrackerMainView: React.FC<TrackerMainViewProps> = ({
   workspacePath,
   trackerTypes,
 }) => {
+  const { t } = useI18n();
   const [sortBy, setSortBy] = useState<TrackerSortColumn>('lastIndexed');
   const [sortDirection, setSortDirection] = useState<TrackerSortDirection>('desc');
   const [searchQuery, setSearchQuery] = useState('');
@@ -454,7 +456,7 @@ export const TrackerMainView: React.FC<TrackerMainViewProps> = ({
           />
           <input
             type="text"
-            placeholder="Search items..."
+            placeholder={t('tracker.searchItems', 'Search items...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-7 pr-2 py-1 text-xs bg-nim-secondary border border-nim rounded text-nim placeholder:text-nim-faint focus:outline-none focus:border-[var(--nim-primary)]"
@@ -475,10 +477,10 @@ export const TrackerMainView: React.FC<TrackerMainViewProps> = ({
           <button
             className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-nim-muted border border-nim rounded hover:bg-nim-tertiary hover:text-nim transition-colors"
             onClick={() => setImportMenuOpen(!importMenuOpen)}
-            title="Import from files"
+            title={t('tracker.importFromFiles', 'Import from files')}
           >
             <MaterialSymbol icon="upload_file" size={14} />
-            Import
+            {t('tracker.import', 'Import')}
           </button>
           {importMenuOpen && (
             <div className="absolute right-0 top-full mt-1 w-[220px] bg-nim border border-nim rounded-md shadow-lg z-50 py-1">
@@ -487,21 +489,21 @@ export const TrackerMainView: React.FC<TrackerMainViewProps> = ({
                 onClick={() => handleBulkImport('nimbalyst-local/plans')}
               >
                 <MaterialSymbol icon="folder_open" size={14} />
-                Import from nimbalyst-local/plans
+                {t('tracker.importFromNimbalystLocal', 'Import from nimbalyst-local/plans')}
               </button>
               <button
                 className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-nim-muted hover:bg-nim-tertiary hover:text-nim text-left"
                 onClick={() => handleBulkImport('plans')}
               >
                 <MaterialSymbol icon="folder_open" size={14} />
-                Import from plans/
+                {t('tracker.importFromPlans', 'Import from plans/')}
               </button>
               <button
                 className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-nim-muted hover:bg-nim-tertiary hover:text-nim text-left"
                 onClick={() => handleBulkImport('design')}
               >
                 <MaterialSymbol icon="folder_open" size={14} />
-                Import from design/
+                {t('tracker.importFromDesign', 'Import from design/')}
               </button>
             </div>
           )}
@@ -526,7 +528,7 @@ export const TrackerMainView: React.FC<TrackerMainViewProps> = ({
             data-testid="tracker-toolbar-new-button"
           >
             <MaterialSymbol icon="add" size={14} />
-            New
+            {t('tracker.new', 'New')}
           </button>
         )}
       </div>
@@ -659,7 +661,7 @@ const DetailPanelResizable: React.FC<{
         onMouseDown={handleMouseDown}
         role="separator"
         aria-orientation="vertical"
-        aria-label="Resize detail panel"
+        aria-label={t('tracker.resizeDetailPanel', 'Resize detail panel')}
       />
       <div className="flex-1 overflow-hidden">
         {children}
@@ -722,7 +724,7 @@ const QuickAddOverlay: React.FC<QuickAddOverlayProps> = ({ type, tracker, onSubm
             // Prevent global keyboard shortcuts from intercepting while typing
             e.stopPropagation();
           }}
-          placeholder={`New ${displayName.toLowerCase()}...`}
+          placeholder={t('tracker.newItemPlaceholder', 'New {type}...').replace('{type}', displayName.toLowerCase())}
           className="flex-1 min-w-0 px-3 py-1.5 bg-nim border border-nim rounded text-sm text-nim placeholder:text-nim-faint focus:outline-none focus:border-[var(--nim-primary)]"
           data-testid="tracker-quick-add-input"
         />
@@ -732,10 +734,10 @@ const QuickAddOverlay: React.FC<QuickAddOverlayProps> = ({ type, tracker, onSubm
           onChange={(e) => setPriority(e.target.value)}
           className="px-2 py-1.5 bg-nim border border-nim rounded text-sm text-nim focus:outline-none focus:border-[var(--nim-primary)] shrink-0"
         >
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="critical">Critical</option>
+          <option value="low">{t('tracker.priorityLow', 'Low')}</option>
+          <option value="medium">{t('tracker.priorityMedium', 'Medium')}</option>
+          <option value="high">{t('tracker.priorityHigh', 'High')}</option>
+          <option value="critical">{t('tracker.priorityCritical', 'Critical')}</option>
         </select>
 
         <button
@@ -744,14 +746,14 @@ const QuickAddOverlay: React.FC<QuickAddOverlayProps> = ({ type, tracker, onSubm
           className="px-3 py-1.5 rounded text-sm font-medium text-white border-none cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 shrink-0"
           style={{ backgroundColor: color }}
         >
-          Add
+          {t('tracker.add', 'Add')}
         </button>
 
         <button
           type="button"
           onClick={onClose}
           className="p-1 rounded hover:bg-nim-tertiary text-nim-muted shrink-0"
-          title="Cancel (Esc)"
+          title={t('tracker.cancelEsc', 'Cancel (Esc)')}
         >
           <MaterialSymbol icon="close" size={18} />
         </button>

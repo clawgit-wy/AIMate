@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { t } from '../../i18n';
 
 // Helper function to apply theme
 const applyTheme = () => {
@@ -456,27 +457,23 @@ export const WorkspaceManager: React.FC = () => {
 
   const formatDate = (timestamp: number | string | undefined) => {
     if (!timestamp) {
-      return 'Unknown';
+      return t('workspaceManager.date.unknown');
     }
 
-    // Convert string to number if needed
     let ts = typeof timestamp === 'string' ? parseInt(timestamp, 10) : timestamp;
 
-    // If timestamp is in seconds (Unix timestamp), convert to milliseconds
-    // Unix timestamps are typically 10 digits, JS timestamps are 13
     if (ts && ts < 10000000000) {
       ts = ts * 1000;
     }
 
     if (!ts || isNaN(ts) || ts === 0) {
-      return 'Unknown';
+      return t('workspaceManager.date.unknown');
     }
 
     const date = new Date(ts);
 
-    // Check if date is valid
     if (isNaN(date.getTime())) {
-      return 'Never';
+      return t('workspaceManager.date.never');
     }
 
     const now = new Date();
@@ -486,14 +483,14 @@ export const WorkspaceManager: React.FC = () => {
     if (days < 0) {
       return date.toLocaleDateString();
     } else if (days === 0) {
-      return 'Today';
+      return t('workspaceManager.date.today');
     } else if (days === 1) {
-      return 'Yesterday';
+      return t('workspaceManager.date.yesterday');
     } else if (days < 7) {
-      return `${days} days ago`;
+      return t('workspaceManager.date.daysAgo', { count: days });
     } else if (days < 30) {
       const weeks = Math.floor(days / 7);
-      return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+      return t(weeks > 1 ? 'workspaceManager.date.weeksAgo' : 'workspaceManager.date.weekAgo', { count: weeks });
     } else {
       return date.toLocaleDateString();
     }
@@ -562,10 +559,10 @@ export const WorkspaceManager: React.FC = () => {
           </div>
           <div className="action-buttons flex gap-2">
             <button className="btn nim-btn-primary" onClick={handleBrowse}>
-              Open Folder
+              {t('workspaceManager.openFolder')}
             </button>
             <button className="btn nim-btn-secondary" onClick={handleCreateWorkspace}>
-              New Folder
+              {t('workspaceManager.newFolder')}
             </button>
           </div>
         </div>
@@ -576,7 +573,7 @@ export const WorkspaceManager: React.FC = () => {
               <input
                 type="text"
                 className="workspace-search nim-input"
-                placeholder="Search projects..."
+                placeholder={t('workspaceManager.searchProjects')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -591,11 +588,11 @@ export const WorkspaceManager: React.FC = () => {
             </div>
           ) : workspaces.length === 0 ? (
             <div className="sidebar-empty flex flex-col items-center justify-center h-full p-5 text-center">
-              <p className="text-[13px] text-[var(--nim-text-faint)] m-0">No recent projects</p>
+              <p className="text-[13px] text-[var(--nim-text-faint)] m-0">{t('workspaceManager.noRecentProjects')}</p>
             </div>
           ) : filteredWorkspaces.length === 0 ? (
             <div className="sidebar-empty flex flex-col items-center justify-center h-full p-5 text-center">
-              <p className="text-[13px] text-[var(--nim-text-faint)] m-0">No matching projects</p>
+              <p className="text-[13px] text-[var(--nim-text-faint)] m-0">{t('workspaceManager.noMatchingProjects')}</p>
             </div>
           ) : (
             filteredWorkspaces.map((workspace, index) => (
@@ -624,7 +621,7 @@ export const WorkspaceManager: React.FC = () => {
                   <div className="workspace-path text-[11px] text-[var(--nim-text-muted)] overflow-hidden text-ellipsis whitespace-nowrap mb-0.5">{workspace.path}</div>
                   <div className="workspace-meta flex gap-3 text-[11px] text-[var(--nim-text-faint)]">
                     {workspace.markdownCount !== undefined && (
-                      <span className="whitespace-nowrap">{workspace.markdownCount} markdown files</span>
+                      <span className="whitespace-nowrap">{t(workspace.markdownCount === 1 ? 'workspaceManager.markdownFile' : 'workspaceManager.markdownFiles', { count: workspace.markdownCount })}</span>
                     )}
                     <span className="whitespace-nowrap">{formatDate(workspace.lastOpened)}</span>
                   </div>
@@ -645,10 +642,10 @@ export const WorkspaceManager: React.FC = () => {
               </div>
               <div className="content-actions flex gap-2 shrink-0">
                 <button className="btn nim-btn-primary" onClick={handleOpenWorkspace}>
-                  Open Project
+                  {t('workspaceManager.openProject')}
                 </button>
                 <button className="btn nim-btn-secondary !text-[var(--nim-error)] !border-[var(--nim-error-subtle)] hover:!bg-[var(--nim-error-subtle)]" onClick={() => handleRemoveFromRecent()}>
-                  Remove from Recent
+                  {t('workspaceManager.removeFromRecent')}
                 </button>
               </div>
             </div>
@@ -659,25 +656,25 @@ export const WorkspaceManager: React.FC = () => {
                   <div className="stats-grid grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
                     <div className="stat-card bg-[var(--nim-bg)] border border-[var(--nim-border)] rounded-md p-4">
                       <div className="stat-value text-2xl font-semibold text-[var(--nim-text)] mb-1">{workspaceStats.fileCount}</div>
-                      <div className="stat-label text-xs text-[var(--nim-text-muted)] uppercase tracking-wider">Total Files</div>
+                      <div className="stat-label text-xs text-[var(--nim-text-muted)] uppercase tracking-wider">{t('workspaceManager.totalFiles')}</div>
                     </div>
                     <div className="stat-card bg-[var(--nim-bg)] border border-[var(--nim-border)] rounded-md p-4">
                       <div className="stat-value text-2xl font-semibold text-[var(--nim-text)] mb-1">{workspaceStats.markdownCount}</div>
-                      <div className="stat-label text-xs text-[var(--nim-text-muted)] uppercase tracking-wider">Markdown Files</div>
+                      <div className="stat-label text-xs text-[var(--nim-text-muted)] uppercase tracking-wider">{t('workspaceManager.markdownFilesLabel')}</div>
                     </div>
                     <div className="stat-card bg-[var(--nim-bg)] border border-[var(--nim-border)] rounded-md p-4">
                       <div className="stat-value text-2xl font-semibold text-[var(--nim-text)] mb-1">{formatSize(workspaceStats.totalSize)}</div>
-                      <div className="stat-label text-xs text-[var(--nim-text-muted)] uppercase tracking-wider">Total Size</div>
+                      <div className="stat-label text-xs text-[var(--nim-text-muted)] uppercase tracking-wider">{t('workspaceManager.totalSize')}</div>
                     </div>
                     <div className="stat-card bg-[var(--nim-bg)] border border-[var(--nim-border)] rounded-md p-4">
                       <div className="stat-value text-2xl font-semibold text-[var(--nim-text)] mb-1">{formatDate(selectedWorkspace.lastOpened)}</div>
-                      <div className="stat-label text-xs text-[var(--nim-text-muted)] uppercase tracking-wider">Last Opened</div>
+                      <div className="stat-label text-xs text-[var(--nim-text-muted)] uppercase tracking-wider">{t('workspaceManager.lastOpened')}</div>
                     </div>
                   </div>
 
                   {workspaceStats.recentFiles.length > 0 && (
                     <div className="recent-files bg-[var(--nim-bg)] border border-[var(--nim-border)] rounded-md p-4 mt-4">
-                      <h3 className="text-sm font-semibold text-[var(--nim-text)] m-0 mb-3">Recent Files</h3>
+                      <h3 className="text-sm font-semibold text-[var(--nim-text)] m-0 mb-3">{t('workspaceManager.recentFiles')}</h3>
                       <ul className="list-none m-0 p-0">
                         {workspaceStats.recentFiles.map(file => (
                           <li key={file} className="flex items-center gap-2 py-1.5 text-[13px] text-[var(--nim-text-muted)] border-b border-[var(--nim-border-subtle)] last:border-b-0">
@@ -703,26 +700,24 @@ export const WorkspaceManager: React.FC = () => {
                 <img src="./icon.png" alt="Nimbalyst" className="welcome-logo w-16 h-16 object-contain" />
                 <div className="welcome-text text-left">
                   <h1 className="welcome-title text-[28px] font-extrabold text-[var(--nim-text)] m-0 mb-1 tracking-tight">Nimbalyst</h1>
-                  <p className="welcome-subtitle text-sm text-[var(--nim-text-muted)] m-0 font-normal">AI-native, interactive work platform</p>
+                  <p className="welcome-subtitle text-sm text-[var(--nim-text-muted)] m-0 font-normal">{t('workspaceManager.aiNativePlatform')}</p>
                 </div>
               </div>
 
               <div className="welcome-info-compact mb-6 text-center">
                 <p className="welcome-description text-sm text-[var(--nim-text-muted)] leading-relaxed m-0">
-                  Projects are local folders on your computer. Open any folder to view and edit all markdown files within it.
-                  If you are working on a coding project, it is recommended to open the root folder of your project as
-                  agents are configured at the project level.
+                  {t('workspaceManager.welcomeDescription')}
                 </p>
               </div>
 
               <div className="welcome-actions flex justify-center gap-4">
                 <button className="btn btn-large btn-welcome-primary bg-[var(--nim-primary)] text-white border-none py-3 px-6 text-[15px] font-semibold rounded-lg cursor-pointer transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_2px_8px_rgba(59,130,246,0.3)] hover:bg-[var(--nim-primary-hover)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.4)] hover:-translate-y-px" onClick={handleBrowse}>
                   <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>folder_open</span>
-                  Open Folder
+                  {t('workspaceManager.openFolder')}
                 </button>
                 <button className="btn btn-large btn-welcome-secondary bg-[var(--nim-bg)] text-[var(--nim-text-muted)] border-2 border-[var(--nim-border)] py-3 px-6 text-[15px] font-semibold rounded-lg cursor-pointer transition-all duration-200 flex items-center justify-center gap-2 hover:bg-[var(--nim-bg-secondary)] hover:border-[var(--nim-border-hover)] hover:-translate-y-px" onClick={handleCreateWorkspace}>
                   <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>create_new_folder</span>
-                  New Folder
+                  {t('workspaceManager.newFolder')}
                 </button>
               </div>
             </div>
@@ -742,7 +737,7 @@ export const WorkspaceManager: React.FC = () => {
             onClick={() => handleContextMenuAction('open')}
           >
             <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>folder_open</span>
-            Open Project
+            {t('workspaceManager.openProject')}
           </button>
           <div className="border-t border-[var(--nim-border)] my-1" />
           <button
@@ -750,14 +745,14 @@ export const WorkspaceManager: React.FC = () => {
             onClick={() => handleContextMenuAction('rename')}
           >
             <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>edit</span>
-            Rename...
+            {t('workspaceManager.rename')}...
           </button>
           <button
             className="w-full px-3 py-1.5 text-left text-[13px] text-[var(--nim-text)] hover:bg-[var(--nim-bg-hover)] flex items-center gap-2"
             onClick={() => handleContextMenuAction('move')}
           >
             <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>drive_file_move</span>
-            Move to...
+            {t('workspaceManager.moveProject')}...
           </button>
           <div className="border-t border-[var(--nim-border)] my-1" />
           <button
@@ -765,7 +760,7 @@ export const WorkspaceManager: React.FC = () => {
             onClick={() => handleContextMenuAction('remove')}
           >
             <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>close</span>
-            Remove from Recent
+            {t('workspaceManager.removeFromRecent')}
           </button>
         </div>
       )}
@@ -774,24 +769,24 @@ export const WorkspaceManager: React.FC = () => {
       {renameDialog.visible && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[3000]">
           <div className="bg-[var(--nim-bg)] border border-[var(--nim-border)] rounded-lg shadow-xl p-5 w-[450px]">
-            <h2 className="text-lg font-semibold text-[var(--nim-text)] m-0 mb-3">Rename Project</h2>
+            <h2 className="text-lg font-semibold text-[var(--nim-text)] m-0 mb-3">{t('workspaceManager.renameProject')}</h2>
 
             {/* Warning banner */}
             <div className="bg-[var(--nim-warning)]/10 border border-[var(--nim-warning)]/30 rounded-md p-3 mb-4 flex gap-2">
               <span className="material-symbols-outlined text-[18px] text-[var(--nim-warning)] shrink-0 mt-0.5" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>warning</span>
               <div className="text-[12px] text-[var(--nim-text-muted)]">
-                <p className="m-0 mb-1 font-medium text-[var(--nim-text)]">This will rename the project folder on disk</p>
-                <p className="m-0">All AI session history, file history, and settings will be migrated. This may take a while for large projects.</p>
+                <p className="m-0 mb-1 font-medium text-[var(--nim-text)]">{t('workspaceManager.renameWarningTitle')}</p>
+                <p className="m-0">{t('workspaceManager.renameWarningMessage')}</p>
                 {renameDialog.stats && (
                   <p className="m-0 mt-1 text-[var(--nim-text-faint)]">
-                    Project size: {renameDialog.stats.fileCount.toLocaleString()} files, {formatSize(renameDialog.stats.totalSize)}
+                    {t('workspaceManager.projectSize', { fileCount: renameDialog.stats.fileCount.toLocaleString(), size: formatSize(renameDialog.stats.totalSize) })}
                   </p>
                 )}
               </div>
             </div>
 
             <div className="mb-4">
-              <label className="block text-[13px] text-[var(--nim-text-muted)] mb-1">New name</label>
+              <label className="block text-[13px] text-[var(--nim-text-muted)] mb-1">{t('workspaceManager.newName')}</label>
               <input
                 ref={renameInputRef}
                 type="text"
@@ -817,14 +812,14 @@ export const WorkspaceManager: React.FC = () => {
                 onClick={() => setRenameDialog({ visible: false, workspace: null, newName: '', error: null })}
                 disabled={operationInProgress}
               >
-                Cancel
+                {t('workspaceManager.cancel')}
               </button>
               <button
                 className="btn nim-btn-primary"
                 onClick={handleRenameSubmit}
                 disabled={operationInProgress || !renameDialog.newName.trim()}
               >
-                {operationInProgress ? 'Renaming...' : 'Rename'}
+                {operationInProgress ? t('workspaceManager.renaming') : t('workspaceManager.rename')}
               </button>
             </div>
           </div>
@@ -835,24 +830,24 @@ export const WorkspaceManager: React.FC = () => {
       {confirmDialog.visible && confirmDialog.type === 'move' && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[3000]">
           <div className="bg-[var(--nim-bg)] border border-[var(--nim-border)] rounded-lg shadow-xl p-5 w-[500px]">
-            <h2 className="text-lg font-semibold text-[var(--nim-text)] m-0 mb-3">Move Project</h2>
+            <h2 className="text-lg font-semibold text-[var(--nim-text)] m-0 mb-3">{t('workspaceManager.moveProject')}</h2>
 
             {/* Warning banner */}
             <div className="bg-[var(--nim-warning)]/10 border border-[var(--nim-warning)]/30 rounded-md p-3 mb-4 flex gap-2">
               <span className="material-symbols-outlined text-[18px] text-[var(--nim-warning)] shrink-0 mt-0.5" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>warning</span>
               <div className="text-[12px] text-[var(--nim-text-muted)]">
-                <p className="m-0 mb-1 font-medium text-[var(--nim-text)]">This will move the entire project folder</p>
-                <p className="m-0">All project files will be copied to the new location, and all AI session history, file history, and settings will be migrated. This may take a while for large projects.</p>
+                <p className="m-0 mb-1 font-medium text-[var(--nim-text)]">{t('workspaceManager.moveWarningTitle')}</p>
+                <p className="m-0">{t('workspaceManager.moveWarningMessage')}</p>
               </div>
             </div>
 
             <div className="mb-4 space-y-2">
               <div>
-                <label className="block text-[12px] text-[var(--nim-text-muted)] mb-0.5">From</label>
+                <label className="block text-[12px] text-[var(--nim-text-muted)] mb-0.5">{t('workspaceManager.from')}</label>
                 <div className="text-[13px] text-[var(--nim-text)] bg-[var(--nim-bg-secondary)] px-3 py-2 rounded border border-[var(--nim-border)] font-mono overflow-hidden text-ellipsis">{confirmDialog.workspace?.path}</div>
               </div>
               <div>
-                <label className="block text-[12px] text-[var(--nim-text-muted)] mb-0.5">To</label>
+                <label className="block text-[12px] text-[var(--nim-text-muted)] mb-0.5">{t('workspaceManager.to')}</label>
                 <div className="text-[13px] text-[var(--nim-text)] bg-[var(--nim-bg-secondary)] px-3 py-2 rounded border border-[var(--nim-border)] font-mono overflow-hidden text-ellipsis">{confirmDialog.destinationPath}</div>
               </div>
               {confirmDialog.stats && (
@@ -868,13 +863,13 @@ export const WorkspaceManager: React.FC = () => {
                 className="btn nim-btn-secondary"
                 onClick={() => setConfirmDialog(prev => ({ ...prev, visible: false }))}
               >
-                Cancel
+                {t('workspaceManager.cancel')}
               </button>
               <button
                 className="btn nim-btn-primary"
                 onClick={executeMoveProject}
               >
-                Move Project
+                {t('workspaceManager.moveProject')}
               </button>
             </div>
           </div>

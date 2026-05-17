@@ -4,6 +4,7 @@ import { useDialogState } from '../../../contexts/DialogContext';
 import { DIALOG_IDS } from '../../../dialogs/registry';
 import type { CreateTeamData } from '../../../dialogs/teamDialogs';
 import { AlphaBadge } from '../../common/AlphaBadge';
+import { t } from '../../../i18n';
 
 // ============================================================================
 // Types
@@ -87,27 +88,27 @@ function TrustStatusIcon({ status, onClick }: { status: TrustStatus; onClick?: (
 
   if (status === 'verified') {
     return (
-      <span className="flex items-center text-[var(--nim-success)]" title="Identity verified" {...clickProps}>
-        <MaterialSymbol icon="verified_user" size={14} fill />
-      </span>
-    );
+        <span className="flex items-center text-[var(--nim-success)]" title={t('team.identityVerified', 'Identity verified')} {...clickProps}>
+          <MaterialSymbol icon="verified_user" size={14} fill />
+        </span>
+      );
   }
   if (status === 'pending') {
     return (
-      <span className="flex items-center text-[var(--nim-warning)]" title="Pending">
+      <span className="flex items-center text-[var(--nim-warning)]" title={t('team.pending', 'Pending')}>
         <MaterialSymbol icon="schedule" size={14} />
       </span>
     );
   }
   if (status === 'fingerprint-changed') {
     return (
-      <span className="flex items-center text-[var(--nim-error)]" title="Key changed since verification" {...clickProps}>
-        <MaterialSymbol icon="gpp_maybe" size={14} fill />
-      </span>
-    );
+        <span className="flex items-center text-[var(--nim-error)]" title={t('team.keyChangedSinceVerification', 'Key changed since verification')} {...clickProps}>
+          <MaterialSymbol icon="gpp_maybe" size={14} fill />
+        </span>
+      );
   }
   return (
-    <span className="flex items-center text-[#f97316]" title="Not verified" {...clickProps}>
+    <span className="flex items-center text-[#f97316]" title={t('team.notVerified', 'Not verified')} {...clickProps}>
       <MaterialSymbol icon="shield" size={14} />
     </span>
   );
@@ -125,15 +126,15 @@ function RoleBadge({ role, editable, onChange }: { role: 'admin' | 'member'; edi
         onChange={(e) => onChange(e.target.value as 'admin' | 'member')}
         className={`${colorClass} px-[5px] py-[2px] rounded-[10px] text-[10px] font-semibold border-none cursor-pointer outline-none hover:ring-1 hover:ring-[var(--nim-primary)]`}
       >
-        <option value="admin">Admin</option>
-        <option value="member">Member</option>
+        <option value="admin">{t('team.admin', 'Admin')}</option>
+        <option value="member">{t('team.memberRole', 'Member')}</option>
       </select>
     );
   }
 
   return (
     <span className={`${colorClass} px-[7px] py-[2px] rounded-[10px] text-[10px] font-semibold`}>
-      {role === 'admin' ? 'Admin' : 'Member'}
+      {role === 'admin' ? t('team.admin', 'Admin') : t('team.memberRole', 'Member')}
     </span>
   );
 }
@@ -151,9 +152,7 @@ function TeamPricingNotice() {
   return (
     <div className="mt-2.5 flex items-start gap-1.5 text-[12px] leading-relaxed text-[var(--nim-text-faint)]">
       <MaterialSymbol icon="info" size={13} className="mt-[2px] shrink-0" />
-      <span>
-        Nimbalyst Teams is <span className="text-[var(--nim-text-muted)]">free during alpha</span>. We plan to introduce a paid subscription tier for teams in the future; existing teams will get advance notice before any pricing change.
-      </span>
+      <span dangerouslySetInnerHTML={{ __html: t('team.pricingNotice', 'Nimbalyst Teams is <span class="text-[var(--nim-text-muted)]">free during alpha</span>. We plan to introduce a paid subscription tier for teams in the future; existing teams will get advance notice before any pricing change.') }} />
     </div>
   );
 }
@@ -164,16 +163,16 @@ function EncryptionCard() {
       <div className="flex items-center gap-2 mb-2">
         <MaterialSymbol icon="lock" size={16} className="text-[var(--nim-success)]" />
         <span className="text-[13px] font-semibold text-[var(--nim-success)]">
-          End-to-End Encryption
+          {t('team.endToEndEncryption', 'End-to-End Encryption')}
         </span>
       </div>
       <p className="m-0 mb-2 text-[12px] text-[var(--nim-text-muted)] leading-relaxed">
-        Team data is encrypted with keys shared via ECDH key exchange. The server never sees your data.
+        {t('team.encryptionDesc', 'Team data is encrypted with keys shared via ECDH key exchange. The server never sees your data.')}
       </p>
       <ul className="m-0 pl-5 text-[12px] text-[var(--nim-text)] leading-7">
-        <li>Encryption keys are shared directly between team members</li>
-        <li>Only verified team members can decrypt shared data</li>
-        <li>Removing a member rotates the encryption key</li>
+        <li>{t('team.encryptionFeature1', 'Encryption keys are shared directly between team members')}</li>
+        <li>{t('team.encryptionFeature2', 'Only verified team members can decrypt shared data')}</li>
+        <li>{t('team.encryptionFeature3', 'Removing a member rotates the encryption key')}</li>
       </ul>
     </div>
   );
@@ -209,7 +208,7 @@ function MemberFingerprintDetail({ member, fingerprint, onVerify, onRevoke, onRe
   if (!fingerprint) {
     return (
       <div className="px-3.5 py-2.5 bg-[var(--nim-bg)] text-[12px] text-[var(--nim-text-faint)]">
-        Loading fingerprint...
+        {t('team.loadingFingerprint', 'Loading fingerprint...')}
       </div>
     );
   }
@@ -222,22 +221,20 @@ function MemberFingerprintDetail({ member, fingerprint, onVerify, onRevoke, onRe
         <div className="flex items-center gap-2 p-2 mb-2.5 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded">
           <MaterialSymbol icon="warning" size={14} className="text-[var(--nim-error)] shrink-0" />
           <span className="text-[11px] text-[var(--nim-error)]">
-            This member's identity key has changed since you last verified it.
-            Verify their new fingerprint before trusting data from them.
+            {t('team.fingerprintChangedWarning', "This member's identity key has changed since you last verified it. Verify their new fingerprint before trusting data from them.")}
           </span>
         </div>
       )}
 
       <div className="mb-2">
-        <div className="text-[11px] text-[var(--nim-text-faint)] mb-1">Identity Key Fingerprint</div>
+        <div className="text-[11px] text-[var(--nim-text-faint)] mb-1">{t('team.identityKeyFingerprint', 'Identity Key Fingerprint')}</div>
         <div className="px-2.5 py-2 bg-[var(--nim-bg-secondary)] rounded font-mono text-[11px] text-[var(--nim-text-muted)] leading-relaxed break-all select-text">
           {shortFingerprint}
         </div>
       </div>
 
       <p className="text-[11px] text-[var(--nim-text-faint)] leading-relaxed mb-2.5 m-0">
-        Compare this fingerprint with {member.name || member.email} out-of-band
-        (e.g., in person or via a secure channel) to verify their identity.
+        {t('team.compareFingerprint', 'Compare this fingerprint with {name} out-of-band (e.g., in person or via a secure channel) to verify their identity.').replace('{name}', member.name || member.email)}
       </p>
 
       <div className="flex items-center gap-2">
@@ -246,23 +243,23 @@ function MemberFingerprintDetail({ member, fingerprint, onVerify, onRevoke, onRe
             onClick={onRevoke}
             className="px-2.5 py-1 text-[11px] bg-transparent border border-[rgba(239,68,68,0.4)] rounded text-[var(--nim-error)] cursor-pointer hover:bg-[rgba(239,68,68,0.1)]"
           >
-            Revoke Trust
+            {t('team.revokeTrust', 'Revoke Trust')}
           </button>
         ) : (
           <button
             onClick={onVerify}
             className="px-2.5 py-1 text-[11px] bg-[var(--nim-success)] border-none rounded text-white cursor-pointer hover:opacity-90"
           >
-            Mark as Verified
+            {t('team.markAsVerified', 'Mark as Verified')}
           </button>
         )}
         {isAdmin && onReshareKey && (
           <button
             onClick={onReshareKey}
             className="px-2.5 py-1 text-[11px] bg-transparent border border-[var(--nim-border)] rounded text-[var(--nim-text-muted)] cursor-pointer hover:bg-[var(--nim-bg-hover)]"
-            title="Re-share the encryption key with this member (e.g., after they changed devices)"
+            title={t('team.reShareKeyHint', 'Re-share the encryption key with this member (e.g., after they changed devices)')}
           >
-            Re-share Key
+            {t('team.reShareKey', 'Re-share Key')}
           </button>
         )}
       </div>
@@ -288,7 +285,7 @@ function NoTeamState({ gitRemote, onCreateTeam, loading }: {
             <MaterialSymbol icon="group" size={24} className="text-[var(--nim-primary)]" />
           </div>
           <p className="text-[13px] text-[var(--nim-text-muted)] mb-4 leading-relaxed">
-            This project is personal. Create a team to share tracker items, documents, and collaborate in real time.
+            {t('team.noTeamDesc', 'This project is personal. Create a team to share tracker items, documents, and collaborate in real time.')}
           </p>
           <button
             onClick={onCreateTeam}
@@ -298,7 +295,7 @@ function NoTeamState({ gitRemote, onCreateTeam, loading }: {
             }`}
           >
             <MaterialSymbol icon="add" size={14} />
-            {loading ? 'Creating...' : 'Create Team'}
+            {loading ? t('team.creating', 'Creating...') : t('team.createTeam', 'Create Team')}
           </button>
         </div>
       </div>
@@ -306,15 +303,15 @@ function NoTeamState({ gitRemote, onCreateTeam, loading }: {
       {/* Project Identity */}
       <div className="provider-panel-section py-4 mb-4 border-b border-[var(--nim-border)] last:border-b-0 last:mb-0 last:pb-0">
         <h4 className="provider-panel-section-title text-[15px] font-semibold mb-2 text-[var(--nim-text)]">
-          Project Identity
+          {t('team.projectIdentity', 'Project Identity')}
         </h4>
         <p className="text-[13px] leading-relaxed text-[var(--nim-text-muted)] mb-3">
-          Teams are linked to a git remote, so any member who opens a clone of the same repo is automatically connected.
+          {t('team.projectIdentityDesc', 'Teams are linked to a git remote, so any member who opens a clone of the same repo is automatically connected.')}
         </p>
         <div className="flex items-center gap-2 px-3 py-2.5 bg-[var(--nim-bg-secondary)] rounded-md">
           <MaterialSymbol icon="commit" size={16} className="text-[var(--nim-text-faint)]" />
           <span className="text-[12px] font-mono text-[var(--nim-text-muted)]">
-            {gitRemote || 'No git remote detected'}
+            {gitRemote || t('team.noGitRemote', 'No git remote detected')}
           </span>
         </div>
       </div>
@@ -374,7 +371,7 @@ function TeamExistsState({ team, onInvite, onRemoveMember, onDeleteTeam, onLinkP
           <div className="flex-1 min-w-0">
             <div className="text-[14px] font-semibold text-[var(--nim-text)]">{team.name}</div>
             <div className="text-[11px] text-[var(--nim-text-faint)] font-mono overflow-hidden text-ellipsis whitespace-nowrap">
-              {team.gitRemote || 'No project linked'}
+              {team.gitRemote || t('team.noProjectLinked', 'No project linked')}
             </div>
           </div>
         </div>
@@ -383,10 +380,10 @@ function TeamExistsState({ team, onInvite, onRemoveMember, onDeleteTeam, onLinkP
       {/* Project Identity */}
       <div className="provider-panel-section py-4 mb-4 border-b border-[var(--nim-border)] last:border-b-0 last:mb-0 last:pb-0">
         <h4 className="provider-panel-section-title text-[15px] font-semibold mb-2 text-[var(--nim-text)]">
-          Project Identity
+          {t('team.projectIdentity', 'Project Identity')}
         </h4>
         <p className="text-[12px] text-[var(--nim-text-muted)] mb-3 leading-relaxed">
-          Teams are linked to a git remote. Members who open a clone of the same repo are automatically connected.
+          {t('team.projectIdentityDesc', 'Teams are linked to a git remote. Members who open a clone of the same repo are automatically connected.')}
         </p>
         {team.gitRemoteHash ? (
           <div className="flex items-center gap-2">
@@ -401,7 +398,7 @@ function TeamExistsState({ team, onInvite, onRemoveMember, onDeleteTeam, onLinkP
                 onClick={onUnlinkProject}
                 className="px-2.5 py-2 text-[11px] bg-transparent border border-[var(--nim-border)] rounded text-[var(--nim-text-faint)] cursor-pointer hover:bg-[var(--nim-bg-hover)] shrink-0"
               >
-                Unlink
+                {t('team.unlink', 'Unlink')}
               </button>
             )}
           </div>
@@ -409,14 +406,14 @@ function TeamExistsState({ team, onInvite, onRemoveMember, onDeleteTeam, onLinkP
           <div className="flex items-center gap-2 px-3 py-2.5 bg-[var(--nim-bg-secondary)] rounded-md">
             <MaterialSymbol icon="link_off" size={14} className="text-[var(--nim-text-faint)] shrink-0" />
             <span className="flex-1 text-[12px] text-[var(--nim-text-faint)]">
-              No project linked
+              {t('team.noProjectLinked', 'No project linked')}
             </span>
             {isAdmin && localGitRemote && (
               <button
                 onClick={onLinkProject}
                 className="px-2.5 py-1 text-[11px] bg-[var(--nim-primary)] border-none rounded text-white cursor-pointer"
               >
-                Link This Project
+                {t('team.linkThisProject', 'Link This Project')}
               </button>
             )}
           </div>
@@ -426,9 +423,9 @@ function TeamExistsState({ team, onInvite, onRemoveMember, onDeleteTeam, onLinkP
       {/* Members Section */}
       <div className="provider-panel-section py-4 mb-4 border-b border-[var(--nim-border)] last:border-b-0 last:mb-0 last:pb-0">
         <h4 className="provider-panel-section-title text-[15px] font-semibold mb-2 text-[var(--nim-text)] flex items-center justify-between">
-          <span>Members</span>
+          <span>{t('team.members', 'Members')}</span>
           <span className="text-[11px] font-normal text-[var(--nim-text-faint)]">
-            {team.members.length} {team.members.length === 1 ? 'member' : 'members'}
+            {team.members.length} {team.members.length === 1 ? t('team.member', 'member') : t('team.members', 'members')}
           </span>
         </h4>
 
@@ -463,12 +460,12 @@ function TeamExistsState({ team, onInvite, onRemoveMember, onDeleteTeam, onLinkP
                     <div className="text-[13px] font-medium text-[var(--nim-text)] flex items-center gap-1.5">
                       {member.trustStatus === 'pending' ? member.email : (member.name || member.email)}
                       {member.isYou && (
-                        <span className="text-[10px] text-[var(--nim-text-faint)] font-normal">(you)</span>
+                        <span className="text-[10px] text-[var(--nim-text-faint)] font-normal">{t('team.you', '(you)')}</span>
                       )}
                     </div>
                     {member.trustStatus === 'pending' ? (
                       <div className="text-[11px] text-[var(--nim-text-faint)]">
-                        Invited {member.invitedAt || 'recently'}
+                        {t('team.invited', 'Invited')} {member.invitedAt || t('team.recently', 'recently')}
                       </div>
                     ) : (
                       <div className="text-[11px] text-[var(--nim-text-faint)]">{member.email}</div>
@@ -501,7 +498,7 @@ function TeamExistsState({ team, onInvite, onRemoveMember, onDeleteTeam, onLinkP
                             : 'border-[rgba(239,68,68,0.4)] text-[var(--nim-error)] hover:bg-[rgba(239,68,68,0.1)]'
                         }`}
                       >
-                        {member.trustStatus === 'pending' ? 'Revoke' : 'Remove'}
+                        {member.trustStatus === 'pending' ? t('team.revokeTrust', 'Revoke') : t('team.removeMember', 'Remove')}
                       </button>
                     </div>
                   )}
@@ -531,7 +528,7 @@ function TeamExistsState({ team, onInvite, onRemoveMember, onDeleteTeam, onLinkP
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 onKeyDown={handleInviteKeyDown}
-                placeholder="Invite by email address..."
+                placeholder={t('team.inviteEmailPlaceholder', 'Invite by email address...')}
                 className="flex-1 py-1.5 px-2.5 border border-[var(--nim-border)] rounded bg-[var(--nim-bg)] text-[var(--nim-text)] text-[12px] outline-none placeholder:text-[var(--nim-text-disabled)]"
               />
               <button
@@ -554,10 +551,10 @@ function TeamExistsState({ team, onInvite, onRemoveMember, onDeleteTeam, onLinkP
       {myFingerprint && (
         <div className="provider-panel-section py-4 mb-4 border-b border-[var(--nim-border)] last:border-b-0 last:mb-0 last:pb-0">
           <h4 className="provider-panel-section-title text-[15px] font-semibold mb-2 text-[var(--nim-text)]">
-            Your Fingerprint
+            {t('team.yourFingerprint', 'Your Fingerprint')}
           </h4>
           <p className="text-[12px] text-[var(--nim-text-muted)] mb-2 leading-relaxed">
-            Share this fingerprint with your team members so they can verify your identity.
+            {t('team.shareFingerprint', 'Share this fingerprint with your team members so they can verify your identity.')}
           </p>
           <div className="px-2.5 py-2 bg-[var(--nim-bg-secondary)] rounded font-mono text-[11px] text-[var(--nim-text-muted)] leading-relaxed break-all select-text">
             {myFingerprint.split(':').slice(0, 16).join(':')}
@@ -580,7 +577,7 @@ function TeamExistsState({ team, onInvite, onRemoveMember, onDeleteTeam, onLinkP
             onClick={onDeleteTeam}
             className="px-3.5 py-1.5 text-[12px] bg-transparent border border-[rgba(239,68,68,0.4)] rounded-md text-[var(--nim-error)] cursor-pointer hover:bg-[rgba(239,68,68,0.1)]"
           >
-            Delete Team
+            {t('team.deleteTeam', 'Delete Team')}
           </button>
         </div>
       )}
@@ -610,7 +607,7 @@ function InvitePendingState({ invite, onAccept, loading, gitRemote }: {
             {invite.name}
           </div>
           <p className="text-[13px] text-[var(--nim-text-muted)] mb-4 leading-relaxed">
-            You have been invited to join this team. Accept to collaborate on shared tracker items and documents with end-to-end encryption.
+            {t('team.inviteMessage', 'You have been invited to join this team. Accept to collaborate on shared tracker items and documents with end-to-end encryption.')}
           </p>
           <button
             onClick={onAccept}
@@ -620,7 +617,7 @@ function InvitePendingState({ invite, onAccept, loading, gitRemote }: {
             }`}
           >
             <MaterialSymbol icon="group_add" size={14} />
-            {loading ? 'Joining...' : 'Join Team'}
+            {loading ? t('team.joining', 'Joining...') : t('team.joinTeam', 'Join Team')}
           </button>
         </div>
       </div>

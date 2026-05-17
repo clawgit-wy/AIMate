@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import type { ExtensionManifest, ConfigurationProperty } from '@nimbalyst/runtime';
+import { t } from '../../../i18n';
 
 interface ExtensionConfigPanelProps {
   extensionId: string;
@@ -91,7 +92,7 @@ export const ExtensionConfigPanel: React.FC<ExtensionConfigPanelProps> = ({
   if (!config || Object.keys(properties).length === 0) {
     return (
       <div className="extension-config-empty py-8 text-center text-[var(--nim-text-muted)]">
-        <p>This extension has no configurable settings.</p>
+        <p>{t('extensionConfig.noConfigurableSettings', 'This extension has no configurable settings.')}</p>
       </div>
     );
   }
@@ -99,7 +100,7 @@ export const ExtensionConfigPanel: React.FC<ExtensionConfigPanelProps> = ({
   if (loading) {
     return (
       <div className="extension-config-loading py-8 text-center text-[var(--nim-text-muted)]">
-        <p>Loading configuration...</p>
+        <p>{t('extensionConfig.loadingConfig', 'Loading configuration...')}</p>
       </div>
     );
   }
@@ -234,7 +235,7 @@ const ConfigField: React.FC<ConfigFieldProps> = ({
         <div className="config-field config-field-unsupported py-2 flex flex-col gap-1">
           <span className="config-field-label text-sm font-medium text-[var(--nim-text)]">{description || propertyKey}</span>
           <span className="config-field-value text-sm text-[var(--nim-text-muted)] font-mono">{JSON.stringify(value)}</span>
-          <span className="config-field-hint text-xs text-[var(--nim-text-faint)]">Type "{type}" not supported in UI</span>
+          <span className="config-field-hint text-xs text-[var(--nim-text-faint)]">{t('extensionConfig.unsupportedType', 'Type "{type}" not supported in UI').replace('{type}', type)}</span>
         </div>
       );
   }

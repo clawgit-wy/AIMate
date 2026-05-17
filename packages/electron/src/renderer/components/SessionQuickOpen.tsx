@@ -6,6 +6,7 @@ import { sessionOrChildProcessingAtom, sessionUnreadAtom, sessionPendingPromptAt
 import { fileMentionOptionsAtom, searchFileMentionAtom } from '../store/atoms/fileMention';
 import type { TypeaheadOption } from './Typeahead/GenericTypeahead';
 import { KeyboardShortcuts, getShortcutDisplay } from '../../shared/KeyboardShortcuts';
+import { useI18n } from '../i18n';
 
 import type { SessionMeta as SessionItem } from '../store';
 
@@ -14,6 +15,7 @@ import type { SessionMeta as SessionItem } from '../store';
  * Only re-renders when this session's state changes.
  */
 const SessionStatusIndicator = memo<{ sessionId: string }>(({ sessionId }) => {
+  const { t } = useI18n();
   const isProcessing = useAtomValue(sessionOrChildProcessingAtom(sessionId));
   const hasPendingPrompt = useAtomValue(sessionPendingPromptAtom(sessionId));
   const hasUnread = useAtomValue(sessionUnreadAtom(sessionId));
@@ -23,7 +25,7 @@ const SessionStatusIndicator = memo<{ sessionId: string }>(({ sessionId }) => {
     return (
       <div
         className="session-quick-open-status processing flex items-center justify-center w-5 h-5 text-[var(--nim-primary)] opacity-80"
-        title="Processing..."
+        title={t('session.processing', 'Processing...')}
       >
         <MaterialSymbol icon="progress_activity" size={14} className="animate-spin" />
       </div>
@@ -34,7 +36,7 @@ const SessionStatusIndicator = memo<{ sessionId: string }>(({ sessionId }) => {
     return (
       <div
         className="session-quick-open-status pending-prompt flex items-center justify-center w-5 h-5 text-[var(--nim-warning)] animate-pulse"
-        title="Waiting for your response"
+        title={t('session.waitingForResponse', 'Waiting for your response')}
       >
         <MaterialSymbol icon="help" size={14} />
       </div>
@@ -45,7 +47,7 @@ const SessionStatusIndicator = memo<{ sessionId: string }>(({ sessionId }) => {
     return (
       <div
         className="session-quick-open-status unread flex items-center justify-center w-5 h-5 text-[var(--nim-primary)]"
-        title="Unread response"
+        title={t('session.unreadResponse', 'Unread response')}
       >
         <MaterialSymbol icon="circle" size={8} fill />
       </div>
@@ -74,6 +76,7 @@ export const SessionQuickOpen: React.FC<SessionQuickOpenProps> = ({
   initialSearchQuery,
   onSwitchToPrompts,
 }) => {
+  const { t } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [allSessions, setAllSessions] = useState<SessionItem[]>([]);
@@ -345,7 +348,7 @@ export const SessionQuickOpen: React.FC<SessionQuickOpenProps> = ({
                       setFileFilteredSessionIds(null);
                       setTimeout(() => searchInputRef.current?.focus(), 0);
                     }}
-                    title="Clear file filter"
+                    title={t('session.clearFileFilter', 'Clear file filter')}
                   >
                     <MaterialSymbol icon="close" size={12} />
                   </button>
@@ -354,7 +357,7 @@ export const SessionQuickOpen: React.FC<SessionQuickOpenProps> = ({
                   ref={searchInputRef}
                   type="text"
                   className="flex-1 min-w-0 bg-transparent border-none outline-none text-[var(--nim-text)] text-sm p-0"
-                  placeholder="Filter sessions..."
+                  placeholder={t('session.filterSessions', 'Filter sessions...')}
                   value=""
                   readOnly
                 />
@@ -365,7 +368,7 @@ export const SessionQuickOpen: React.FC<SessionQuickOpenProps> = ({
                   ref={searchInputRef}
                   type="text"
                   className="session-quick-open-search w-full py-2 px-3 text-base rounded-md outline-none box-border bg-[var(--nim-bg-secondary)] border border-[var(--nim-border)] text-[var(--nim-text)] focus:border-[#007aff] focus:shadow-[0_0_0_3px_rgba(0,122,255,0.1)]"
-                  placeholder="Search sessions... (@ to search by file edited)"
+                  placeholder={t('session.searchSessionsPlaceholder', 'Search sessions... (@ to search by file edited)')}
                   value={searchQuery}
                   onChange={(e) => {
                     const val = e.target.value;
@@ -386,10 +389,10 @@ export const SessionQuickOpen: React.FC<SessionQuickOpenProps> = ({
                   <button
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-xs flex items-center gap-1 px-2 py-1 rounded cursor-pointer border-none transition-colors duration-150 bg-transparent text-[var(--nim-text-faint)] hover:bg-[var(--nim-accent-subtle)] hover:text-[var(--nim-primary)]"
                     onClick={() => onSwitchToPrompts(searchQuery)}
-                    title="Search in prompts"
+                    title={t('session.searchInPrompts', 'Search in prompts')}
                   >
                     <kbd className="px-1.5 py-0.5 rounded font-mono text-[10px] bg-[var(--nim-bg)] border border-[var(--nim-border)] text-[var(--nim-text)]">Tab</kbd>
-                    Search prompts
+                    {t('session.searchPrompts', 'Search prompts')}
                   </button>
                 )}
               </>

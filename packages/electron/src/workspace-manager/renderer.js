@@ -49,8 +49,8 @@ function renderWorkspaceList() {
   if (recentWorkspaces.length === 0) {
     container.innerHTML = `
       <div style="text-align: center; padding: 40px 20px; color: #9ca3af;">
-        <p style="font-size: 14px;">No recent workspaces</p>
-        <p style="font-size: 12px; margin-top: 8px;">Open a folder to get started</p>
+        <p style="font-size: 14px;">暂无最近的工作区</p>
+        <p style="font-size: 12px; margin-top: 8px;">打开一个文件夹即可开始</p>
       </div>
     `;
     return;
@@ -58,16 +58,16 @@ function renderWorkspaceList() {
 
   container.innerHTML = recentWorkspaces.map(workspace => {
     const isSelected = selectedWorkspace && selectedWorkspace.path === workspace.path;
-    const lastModified = workspace.lastModified ? formatDate(workspace.lastModified) : 'Unknown';
+    const lastModified = workspace.lastModified ? formatDate(workspace.lastModified) : '未知';
     const fileCount = workspace.fileCount || 0;
-    const warning = workspace.limited ? ' <span style="color: #f59e0b;" title="Large workspace - file count is approximate">⚠️</span>' : '';
+    const warning = workspace.limited ? ' <span style="color: #f59e0b;" title="大型工作区 - 文件数为近似值">⚠️</span>' : '';
 
     return `
       <div class="workspace-item ${isSelected ? 'selected' : ''}" data-path="${escapeHtml(workspace.path)}">
         <div class="workspace-name">${escapeHtml(workspace.name)}${warning}</div>
         <div class="workspace-path">${escapeHtml(workspace.path)}</div>
         <div class="workspace-meta">
-          <span>${fileCount} files</span>
+          <span>${fileCount} 个文件</span>
           <span>•</span>
           <span>${lastModified}</span>
         </div>
@@ -139,7 +139,7 @@ function showWorkspacePreview(workspace, stats) {
           <h2 class="preview-title">${escapeHtml(workspace.name)}</h2>
           <p class="preview-path">${escapeHtml(workspace.path)}</p>
         </div>
-        <button class="remove-btn" onclick="removeFromRecent('${escapeHtml(workspace.path)}')" title="Remove from recent">
+        <button class="remove-btn" onclick="removeFromRecent('${escapeHtml(workspace.path)}')" title="从最近列表移除">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
           </svg>
@@ -148,15 +148,15 @@ function showWorkspacePreview(workspace, stats) {
 
       ${stats.limited ? `
         <div style="padding: 12px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; margin-bottom: 16px; font-size: 13px; color: #92400e;">
-          <strong>⚠️ Large Workspace</strong><br>
-          This workspace contains many files. File counts shown are approximate. The workspace will still open normally.
+          <strong>⚠️ 大型工作区</strong><br>
+          此工作区包含大量文件，显示的文件数为近似值，工作区仍可正常打开。
         </div>
       ` : ''}
 
       <div class="preview-stats">
         <div class="stat-item">
           <div class="stat-value">${stats.fileCount || 0}</div>
-          <div class="stat-label">Files</div>
+          <div class="stat-label">文件</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">${stats.markdownCount || 0}</div>
@@ -164,13 +164,13 @@ function showWorkspacePreview(workspace, stats) {
         </div>
         <div class="stat-item">
           <div class="stat-value">${formatSize(stats.totalSize || 0)}</div>
-          <div class="stat-label">Size</div>
+          <div class="stat-label">大小</div>
         </div>
       </div>
       
       ${stats.recentFiles && stats.recentFiles.length > 0 ? `
         <div style="margin-bottom: 24px;">
-          <div class="section-title" style="margin-bottom: 12px;">Recent Files</div>
+          <div class="section-title" style="margin-bottom: 12px;">最近文件</div>
           <div style="display: flex; flex-direction: column; gap: 8px;">
             ${stats.recentFiles.slice(0, 5).map(file => `
               <div style="padding: 8px 12px; background: #f9fafb; border-radius: 6px; font-size: 13px; color: #374151;">
@@ -183,7 +183,7 @@ function showWorkspacePreview(workspace, stats) {
       
       <div class="preview-actions">
         <button class="btn btn-primary" onclick="openWorkspace('${escapeHtml(workspace.path)}')">
-          Open Workspace
+          打开工作区
         </button>
       </div>
     </div>
@@ -227,7 +227,7 @@ async function openWorkspace(workspacePath) {
 
 // Remove from recent
 async function removeFromRecent(workspacePath) {
-  if (!confirm('Remove this workspace from recent workspaces?')) {
+  if (!confirm('确定要从最近列表中移除此工作区吗？')) {
     return;
   }
 
@@ -245,8 +245,8 @@ async function removeFromRecent(workspacePath) {
               <path d="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z"/>
             </svg>
           </div>
-          <h2 class="empty-title">Workspace Removed</h2>
-          <p class="empty-description">Select another workspace from the list or open a new folder.</p>
+          <h2 class="empty-title">工作区已移除</h2>
+          <p class="empty-description">请从列表中选择其他工作区，或打开新的文件夹。</p>
         </div>
       `;
     }
@@ -257,27 +257,27 @@ async function removeFromRecent(workspacePath) {
 
 // Format date
 function formatDate(timestamp) {
-  if (!timestamp) return 'Unknown';
+  if (!timestamp) return '未知';
   const date = new Date(timestamp);
   const now = new Date();
   const diff = now - date;
 
   if (diff < 3600000) {
     const mins = Math.floor(diff / 60000);
-    return mins <= 1 ? 'Just now' : `${mins} mins ago`;
+    return mins <= 1 ? '刚刚' : `${mins} 分钟前`;
   }
 
   if (diff < 86400000) {
     const hours = Math.floor(diff / 3600000);
-    return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    return `${hours} 小时前`;
   }
 
   if (diff < 604800000) {
     const days = Math.floor(diff / 86400000);
-    return `${days} day${days !== 1 ? 's' : ''} ago`;
+    return `${days} 天前`;
   }
 
-  return date.toLocaleDateString();
+  return date.toLocaleDateString('zh-CN');
 }
 
 // Escape HTML

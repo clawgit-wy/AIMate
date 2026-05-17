@@ -21,6 +21,7 @@ import { AgentTranscriptPanel, TodoItem, type InteractiveWidgetHost, type Permis
 import type { SessionData, ChatAttachment, TranscriptViewMessage } from '@nimbalyst/runtime/ai/server/types';
 import { isToolLikeMessage } from '@nimbalyst/runtime/ui/AgentTranscript/utils/messageTypeHelpers';
 import { AIInput, AIInputRef } from './AIInput';
+import { t } from '../../i18n';
 import { PromptQueueList } from './PromptQueueList';
 import { TranscriptEmbeddedFileCard } from './TranscriptEmbeddedFileCard';
 import { customEditorRegistry } from '../CustomEditors/registry';
@@ -1703,6 +1704,24 @@ export const SessionTranscript = forwardRef<SessionTranscriptRef, SessionTranscr
             currentPhase={currentPhase}
             phaseColumns={SESSION_PHASE_COLUMNS}
             onSetPhase={handleSetPhase}
+            translations={{
+              readyToAssist: t('session.readyToAssist'),
+              webResearch: t('session.webResearch'),
+              codeAnalysis: t('session.codeAnalysis'),
+              fileEditing: t('session.fileEditing'),
+              enterTaskBelow: t('session.enterTaskBelow'),
+              thinking: t('session.thinking'),
+              waitingForComplete: t('session.waitingForComplete'),
+              noMatches: t('session.noMatches'),
+              caseSensitive: t('session.caseSensitive'),
+              caseInsensitive: t('session.caseInsensitive'),
+              showFullMessage: t('session.showFullMessage'),
+              collapseMessage: t('session.collapseMessage'),
+              viewResult: t('session.viewResult'),
+              result: t('session.result'),
+              previousMatch: t('session.previousMatch'),
+              nextMatch: t('session.nextMatch')
+            }}
           />
         </div>
       )}
@@ -1754,10 +1773,10 @@ export const SessionTranscript = forwardRef<SessionTranscriptRef, SessionTranscr
         onNavigateHistory={enableHistoryNavigation ? handleNavigateHistory : undefined}
         placeholder={
           mode === 'chat'
-            ? "Ask a question. @ for files, @@ for sessions, / for commands"
+            ? t('session.askQuestionPlaceholder')
             : enableSlashCommands
-              ? "Type your message... (Enter to send, Shift+Enter for new line, @ for files, @@ for sessions, / for commands)"
-              : "Type your message... (Enter to send, Shift+Enter for new line, @ for files, @@ for sessions, / for commands)"
+              ? t('session.typeMessagePlaceholder')
+              : t('session.typeMessagePlaceholder')
         }
         mode={aiMode}
         onModeChange={handleAIModeChange}

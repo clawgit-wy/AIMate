@@ -43,6 +43,7 @@ import {
 } from '../atoms';
 import { hasActiveDialogsAtom } from '../../contexts/DialogContext';
 import { errorNotificationService } from '../../services/ErrorNotificationService';
+import { t } from '../../i18n';
 import {
   walkthroughTriggerCommandAtom,
   walkthroughResetCommandAtom,
@@ -425,7 +426,7 @@ export function WalkthroughProvider({
     if (!targetElement) {
       errorNotificationService.showInfo(
         'Cannot Show Walkthrough',
-        `"${walkthrough.name}" requires UI elements that aren't visible on this screen. Try switching to ${walkthrough.trigger.screen === 'agent' ? 'Agent Mode' : 'Files Mode'} first.`,
+        `"${walkthrough.name}" requires UI elements that aren't visible on this screen. Try switching to ${walkthrough.trigger.screen === 'agent' ? t('menu.agentMode') : t('menu.filesMode')} first.`,
         { duration: 5000 }
       );
       return;
@@ -435,7 +436,7 @@ export function WalkthroughProvider({
     if (walkthrough.trigger.condition && !walkthrough.trigger.condition()) {
       errorNotificationService.showInfo(
         'Cannot Show Walkthrough',
-        `"${walkthrough.name}" conditions aren't met. Try switching to ${walkthrough.trigger.screen === 'agent' ? 'Agent Mode' : 'Files Mode'} first.`,
+        `"${walkthrough.name}" conditions aren't met. Try switching to ${walkthrough.trigger.screen === 'agent' ? t('menu.agentMode') : t('menu.filesMode')} first.`,
         { duration: 5000 }
       );
       return;

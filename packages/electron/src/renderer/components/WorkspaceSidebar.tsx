@@ -12,6 +12,7 @@ import { getFileName } from '../utils/pathUtils';
 import { getExtensionLoader } from '@nimbalyst/runtime';
 import { KeyboardShortcuts } from '../../shared/KeyboardShortcuts';
 import { HelpTooltip } from '../help';
+import { useI18n } from '../i18n';
 import { store, gitStatusMapAtom, revealRequestAtom, rawFileTreeAtom, fileTreeLoadedAtom, type FileGitStatus as AtomFileGitStatus } from '../store';
 import { sessionFileEditsAtom } from '../store/atoms/sessionFiles';
 import { refreshFileTree } from '../store/listeners/fileTreeListeners';
@@ -132,6 +133,7 @@ export function WorkspaceSidebar({
   onSelectedFolderChange,
   currentAISessionId
 }: WorkspaceSidebarProps) {
+  const { t } = useI18n();
   // Subscribe to TabsContext to get reactive updates when active tab changes
   // This enables auto-scroll functionality after the Jotai refactor that
   // made EditorMode stop re-rendering on tab switches
@@ -1115,8 +1117,8 @@ export function WorkspaceSidebar({
                   ref={newFileButtonRef}
                   className="workspace-action-button bg-transparent border-none p-1.5 cursor-pointer rounded text-[var(--nim-text-faint)] flex items-center justify-center transition-all duration-200 relative hover:bg-[var(--nim-bg-hover)] hover:text-[var(--nim-text)]"
                   onClick={handleNewFileButtonClick}
-                  title="New file"
-                  aria-label="New file"
+                 aria-label={t('workspace.newFile', 'New file')}
+                  title={t('workspace.newFile', 'New file')}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
                     edit_square
@@ -1125,8 +1127,8 @@ export function WorkspaceSidebar({
                 <button
                   className="workspace-action-button bg-transparent border-none p-1.5 cursor-pointer rounded text-[var(--nim-text-faint)] flex items-center justify-center transition-all duration-200 relative hover:bg-[var(--nim-bg-hover)] hover:text-[var(--nim-text)]"
                   onClick={handleNewFolder}
-                  title="New folder"
-                  aria-label="New folder"
+                 aria-label={t('workspace.newFolder', 'New folder')}
+                  title={t('workspace.newFolder', 'New folder')}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
                     create_new_folder
@@ -1138,7 +1140,7 @@ export function WorkspaceSidebar({
                       data-testid="file-tree-quick-open-button"
                       className="workspace-action-button bg-transparent border-none p-1.5 cursor-pointer rounded text-[var(--nim-text-faint)] flex items-center justify-center transition-all duration-200 relative hover:bg-[var(--nim-bg-hover)] hover:text-[var(--nim-text)]"
                       onClick={onOpenQuickSearch}
-                      aria-label="Search files"
+                      aria-label={t('workspace.searchFiles', 'Search files')}
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
                         search
@@ -1152,13 +1154,13 @@ export function WorkspaceSidebar({
                     data-testid="file-tree-filter-button"
                     className="workspace-action-button bg-transparent border-none p-1.5 cursor-pointer rounded text-[var(--nim-text-faint)] flex items-center justify-center transition-all duration-200 relative hover:bg-[var(--nim-bg-hover)] hover:text-[var(--nim-text)]"
                     onClick={handleFilterButtonClick}
-                    aria-label="Filter files"
+                    aria-label={t('workspace.filterFiles', 'Filter files')}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
                       filter_alt
                     </span>
                     {fileTreeFilter !== 'all' && (
-                      <span className="filter-active-indicator text-[var(--nim-primary)] font-bold text-base leading-none absolute top-0.5 right-0.5" title="Filter active">•</span>
+                      <span className="filter-active-indicator text-[var(--nim-primary)] font-bold text-base leading-none absolute top-0.5 right-0.5" title={t('workspace.filterActive', 'Filter active')}>•</span>
                     )}
                   </button>
                 </HelpTooltip>
@@ -1302,7 +1304,7 @@ export function WorkspaceSidebar({
       <InputModal
         isOpen={isFolderModalOpen}
         title={targetFolder ? `New Folder in ${getFileName(targetFolder)}` : "New Folder"}
-        placeholder="Enter folder name"
+        placeholder={t('workspace.enterFolderName', 'Enter folder name')}
         defaultValue=""
         onConfirm={handleCreateFolder}
         onCancel={() => {

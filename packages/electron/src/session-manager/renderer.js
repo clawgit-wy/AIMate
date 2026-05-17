@@ -54,7 +54,7 @@ async function loadSessions() {
     applyWorkspaceFilter();
   } catch (error) {
     console.error('Failed to load sessions:', error);
-    showError('Failed to load sessions');
+    showError('加载会话失败');
   }
 }
 
@@ -113,7 +113,7 @@ function renderSessionsList() {
   if (filteredSessions.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        <p>No sessions found</p>
+        <p>未找到会话</p>
       </div>
     `;
     return;
@@ -136,7 +136,7 @@ function renderSessionsList() {
           <span>•</span>
           <span class="session-item-workspace">${escapeHtml(workspaceName)}</span>
           <span>•</span>
-          <span>${messageCount} messages</span>
+          <span>${messageCount} 条消息</span>
           <span>•</span>
           <span>${date}</span>
         </div>
@@ -187,7 +187,7 @@ function renderSessionContent(session) {
   if (session.messages && session.messages.length > 0) {
     messagesHtml = session.messages.map(msg => {
       const roleClass = msg.role === 'user' ? 'user' : 'assistant';
-      const roleLabel = msg.role === 'user' ? 'You' : 'Claude';
+      const roleLabel = msg.role === 'user' ? '你' : 'Claude';
       const content = formatMessageContent(msg.content || '');
       
       return `
@@ -198,7 +198,7 @@ function renderSessionContent(session) {
       `;
     }).join('');
   } else {
-    messagesHtml = '<div class="empty-state"><p>No messages in this session</p></div>';
+    messagesHtml = '<div class="empty-state"><p>此会话没有消息</p></div>';
   }
   
   contentArea.innerHTML = `
@@ -209,20 +209,20 @@ function renderSessionContent(session) {
         <span>•</span>
         <span>${escapeHtml(workspaceName)}</span>
         <span>•</span>
-        <span>${messageCount} messages</span>
+        <span>${messageCount} 条消息</span>
         <span>•</span>
         <span>${date}</span>
       </div>
     </div>
     <div class="content-actions">
       <button class="btn btn-primary" onclick="openSession('${session.id}', ${session.workspacePath ? `'${escapeHtml(session.workspacePath)}'` : 'null'})">
-        Open Session
+        打开会话
       </button>
       <button class="btn" onclick="exportSession('${session.id}')">
-        Export
+        导出
       </button>
       <button class="btn btn-danger" onclick="deleteSession('${session.id}', ${session.workspacePath ? `'${escapeHtml(session.workspacePath)}'` : 'null'})">
-        Delete
+        删除
       </button>
     </div>
     <div class="messages-container">
@@ -239,7 +239,7 @@ async function openSession(sessionId, workspacePath) {
     window.close();
   } catch (error) {
     console.error('Failed to open session:', error);
-    showError('Failed to open session');
+    showError('打开会话失败');
   }
 }
 
@@ -251,17 +251,17 @@ async function exportSession(sessionId) {
   try {
     const result = await ipcRenderer.invoke('session-manager:export-session', session);
     if (result.success) {
-      showSuccess(`Session exported to ${result.filePath}`);
+      showSuccess(`会话已导出到 ${result.filePath}`);
     }
   } catch (error) {
     console.error('Failed to export session:', error);
-    showError('Failed to export session');
+    showError('导出会话失败');
   }
 }
 
 // Delete session
 async function deleteSession(sessionId, workspacePath) {
-  if (!confirm('Are you sure you want to delete this session? This cannot be undone.')) {
+  if (!confirm('确定要删除此会话吗？此操作不可撤销。')) {
     return;
   }
   
@@ -277,16 +277,16 @@ async function deleteSession(sessionId, workspacePath) {
       selectedSession = null;
       document.getElementById('contentArea').innerHTML = `
         <div class="empty-state">
-          <h2>Select a Session</h2>
-          <p>Choose a session from the list to view its messages</p>
+          <h2>选择一个会话</h2>
+          <p>从列表中选择一个会话以查看消息</p>
         </div>
       `;
     }
     
-    showSuccess('Session deleted');
+    showSuccess('会话已删除');
   } catch (error) {
     console.error('Failed to delete session:', error);
-    showError('Failed to delete session');
+    showError('删除会话失败');
   }
 }
 
@@ -301,12 +301,12 @@ function updateStats() {
   if (filterWorkspace) {
     const workspaceName = getWorkspaceName(filterWorkspace);
     text = count === total 
-      ? `${count} session${count !== 1 ? 's' : ''} in ${workspaceName}`
-      : `${count} of ${total} sessions in ${workspaceName}`;
+      ? `${workspaceName} 中的 ${count} 个会话`
+      : `${workspaceName} 中的 ${count}/${total} 个会话`;
   } else {
     text = count === total 
-      ? `${count} session${count !== 1 ? 's' : ''} across all workspaces`
-      : `${count} of ${total} sessions`;
+      ? `${count} 个会话（所有工作区）`
+      : `${count}/${total} 个会话`;
   }
   document.getElementById('sessionCount').textContent = text;
 }
@@ -322,40 +322,36 @@ function getSessionTitle(session) {
       return firstLine.length > 100 ? firstLine.substring(0, 100) + '...' : firstLine;
     }
   }
-  return `Session ${session.id.substring(0, 8)}`;
+  return `会话 ${session.id.substring(0, 8)}`;
 }
 
 function getWorkspaceName(workspacePath) {
-  if (!workspacePath) return 'No Workspace';
+  if (!workspacePath) return '无工作区';
   return path.basename(workspacePath);
 }
 
 function formatDate(timestamp) {
-  if (!timestamp) return 'Unknown';
+  if (!timestamp) return '未知';
   const date = new Date(timestamp);
   const now = new Date();
   const diff = now - date;
   
-  // Less than 1 hour
   if (diff < 3600000) {
     const mins = Math.floor(diff / 60000);
-    return mins <= 1 ? 'Just now' : `${mins} mins ago`;
+    return mins <= 1 ? '刚刚' : `${mins} 分钟前`;
   }
   
-  // Less than 24 hours
   if (diff < 86400000) {
     const hours = Math.floor(diff / 3600000);
-    return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    return `${hours} 小时前`;
   }
   
-  // Less than 7 days
   if (diff < 604800000) {
     const days = Math.floor(diff / 86400000);
-    return `${days} day${days !== 1 ? 's' : ''} ago`;
+    return `${days} 天前`;
   }
   
-  // Older
-  return date.toLocaleDateString();
+  return date.toLocaleDateString('zh-CN');
 }
 
 function formatMessageContent(content) {
@@ -401,7 +397,7 @@ function updateWorkspaceFilterBadge() {
   const badge = document.getElementById('workspaceFilter');
   if (filterWorkspace) {
     const workspaceName = getWorkspaceName(filterWorkspace);
-    badge.textContent = `Workspace: ${workspaceName}`;
+    badge.textContent = `工作区: ${workspaceName}`;
     badge.style.display = 'inline-block';
   } else {
     badge.style.display = 'none';

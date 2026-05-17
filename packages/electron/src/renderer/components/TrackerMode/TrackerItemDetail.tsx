@@ -23,6 +23,7 @@ import { trackerItemByIdAtom } from '@nimbalyst/runtime/plugins/TrackerPlugin/tr
 import { refreshSessionListAtom, sessionRegistryAtom, type SessionMeta } from '../../store/atoms/sessions';
 import { getRelativeTimeString } from '../../utils/dateFormatting';
 import { useTrackerContentCollab } from '../../hooks/useTrackerContentCollab';
+import { useI18n } from '../../i18n';
 
 interface TrackerItemDetailProps {
   itemId: string;
@@ -178,6 +179,7 @@ export const TrackerItemDetail: React.FC<TrackerItemDetailProps> = ({
   onArchive,
   onDelete,
 }) => {
+  const { t } = useI18n();
   // Read directly from per-item atom -- only re-renders when THIS item changes,
   // not when any other item in the workspace updates.
   const item = useAtomValue(trackerItemByIdAtom(itemId));
@@ -793,7 +795,7 @@ export const TrackerItemDetail: React.FC<TrackerItemDetailProps> = ({
               onChange={(e) => handleTextFieldChange('title', e.target.value)}
               onKeyDown={(e) => e.stopPropagation()}
               className="w-full bg-transparent border-none outline-none text-base font-semibold text-nim placeholder:text-nim-faint p-0"
-              placeholder="Item title..."
+              placeholder={t('tracker.itemTitlePlaceholder', 'Item title...')}
               data-testid="tracker-detail-title"
             />
           ) : (
@@ -832,7 +834,7 @@ export const TrackerItemDetail: React.FC<TrackerItemDetailProps> = ({
             {isNativeItem(item) && (
               <span
                 className="text-[10px] font-medium px-1.5 py-0.5 rounded flex items-center gap-0.5 bg-gray-500/[0.125] text-gray-400"
-                title="Stored in database — not backed by a file"
+                title={t('tracker.storedInDatabase', 'Stored in database — not backed by a file')}
                 data-testid="tracker-source-db-badge"
               >
                 <MaterialSymbol icon="storage" size={11} />
@@ -876,7 +878,7 @@ export const TrackerItemDetail: React.FC<TrackerItemDetailProps> = ({
           <button
             className="p-1 rounded hover:bg-nim-tertiary text-nim-muted"
             onClick={onClose}
-            title="Close (Esc)"
+            title={t('tracker.closeEsc', 'Close (Esc)')}
           >
             <MaterialSymbol icon="close" size={18} />
           </button>
@@ -1018,7 +1020,7 @@ export const TrackerItemDetail: React.FC<TrackerItemDetailProps> = ({
               </button>
             </div>
           ) : (
-            <p className="text-sm text-nim-faint m-0">No content</p>
+            <p className="text-sm text-nim-faint m-0">{t('tracker.noContent', 'No content')}</p>
           )}
         </div>
 
@@ -1039,7 +1041,7 @@ export const TrackerItemDetail: React.FC<TrackerItemDetailProps> = ({
                       void refreshSessionList();
                       setIsLinkingExistingSession((prev) => !prev);
                     }}
-                    title="Link an existing AI session to this item"
+                    title={t('tracker.linkExistingSession', 'Link an existing AI session to this item')}
                   >
                     <MaterialSymbol icon="link" size={14} />
                     {isLinkingExistingSession ? 'Cancel' : 'Link Existing'}
@@ -1049,7 +1051,7 @@ export const TrackerItemDetail: React.FC<TrackerItemDetailProps> = ({
                   <button
                     className="flex items-center gap-1 px-1.5 py-0.5 text-[11px] font-medium rounded text-nim-muted hover:text-nim hover:bg-nim-tertiary transition-colors"
                     onClick={() => onLaunchSession(item.id)}
-                    title="Launch a new AI session for this item"
+                    title={t('tracker.launchNewSession', 'Launch a new AI session for this item')}
                   >
                     <MaterialSymbol icon="add" size={14} />
                     Launch Session
@@ -1064,7 +1066,7 @@ export const TrackerItemDetail: React.FC<TrackerItemDetailProps> = ({
                   type="text"
                   value={sessionSearchQuery}
                   onChange={(e) => setSessionSearchQuery(e.target.value)}
-                  placeholder={`Search ${availableSessions.length} existing session${availableSessions.length === 1 ? '' : 's'}`}
+                  placeholder={t('tracker.searchSessions', 'Search {count} existing session(s)').replace('{count}', availableSessions.length.toString())}
                 />
                 <div className="mt-2 space-y-1">
                   {filteredAvailableSessions.length > 0 ? (
@@ -1153,7 +1155,7 @@ export const TrackerItemDetail: React.FC<TrackerItemDetailProps> = ({
                     <button
                       className="opacity-0 group-hover:opacity-100 transition-opacity"
                       onClick={() => onSwitchToAgentMode?.(commit.sessionId!)}
-                      title="Open linked session"
+                      title={t('tracker.openLinkedSession', 'Open linked session')}
                     >
                       <MaterialSymbol icon="smart_toy" size={14} className="text-nim-faint" />
                     </button>
@@ -1205,7 +1207,7 @@ export const TrackerItemDetail: React.FC<TrackerItemDetailProps> = ({
             {/* Author identity */}
             {item.system.authorIdentity && (
               <div className="col-span-2 flex items-center gap-1.5">
-                <span className="text-nim-faint shrink-0">Created by</span>
+                <span className="text-nim-faint shrink-0">{t('tracker.createdBy', 'Created by')}</span>
                 <UserAvatar identity={item.system.authorIdentity} showName size={16} />
                 {item.system.createdByAgent && (
                   <span className="text-[10px] text-nim-faint bg-nim-tertiary px-1 py-0.5 rounded">via AI</span>
@@ -1215,7 +1217,7 @@ export const TrackerItemDetail: React.FC<TrackerItemDetailProps> = ({
             {/* Last modifier */}
             {item.system.lastModifiedBy && item.system.lastModifiedBy.displayName !== item.system.authorIdentity?.displayName && (
               <div className="col-span-2 flex items-center gap-1.5">
-                <span className="text-nim-faint shrink-0">Modified by</span>
+                <span className="text-nim-faint shrink-0">{t('tracker.modifiedBy', 'Modified by')}</span>
                 <UserAvatar identity={item.system.lastModifiedBy} showName size={16} />
               </div>
             )}
@@ -1392,7 +1394,7 @@ const CommentsSection: React.FC<{ itemId: string; comments?: any[] }> = ({ itemI
           value={newComment}
           onChange={e => setNewComment(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
-          placeholder="Add a comment..."
+          placeholder={t('tracker.addCommentPlaceholder', 'Add a comment...')}
           className="flex-1 bg-nim-secondary border border-nim rounded px-2 py-1 text-xs text-nim placeholder:text-nim-faint outline-none focus:border-nim-primary"
         />
         <button

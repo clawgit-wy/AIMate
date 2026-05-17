@@ -240,6 +240,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getAppVersion: () => ipcRenderer.invoke('get-app-version'),
   setTheme: (theme: string) => ipcRenderer.invoke('set-theme', theme),
 
+  // Store operations for i18n and general app settings
+  store: {
+    get: (key: string) => ipcRenderer.invoke('app-settings:get', key),
+    set: (key: string, value: unknown) => ipcRenderer.invoke('app-settings:set', key, value),
+  },
+
   // File operations
   openFile: () => ipcRenderer.invoke('open-file'),
   openFileDialog: (options?: {

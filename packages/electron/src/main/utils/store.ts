@@ -190,6 +190,8 @@ interface AppStoreSchema {
     /** Verbose tracing for the diff/AI-edit pipeline (DocumentModel, DiskBackedStore, TabEditor, DiffPlugin). */
     diffTrace?: boolean;
   };
+  // UI locale for i18n (default: 'zh-CN')
+  uiLocale?: 'en' | 'zh-CN';
   // Preferred interactive terminal shell on Windows. 'auto' uses detection priority.
   preferredTerminalShell?: PreferredTerminalShell;
   // Last known app version (for migrations)

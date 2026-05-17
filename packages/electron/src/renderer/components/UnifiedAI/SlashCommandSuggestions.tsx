@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { usePostHog } from 'posthog-js/react';
+import { t } from '../../i18n';
 
 interface ExtensionPluginCommand {
   extensionId: string;
@@ -145,7 +146,7 @@ export const SlashCommandSuggestions: React.FC<SlashCommandSuggestionsProps> = (
   return (
     <div className="slash-command-suggestions flex flex-col items-center gap-2 px-3 py-2 max-w-4xl mx-auto">
       <div className="slash-command-suggestions-label text-xs font-medium text-[var(--nim-text-faint)]">
-        Try a command:
+        {t('session.tryACommand')}
       </div>
       <div className="slash-command-suggestions-pills flex flex-wrap justify-center gap-2">
         {displayCommands.map((cmd) => (

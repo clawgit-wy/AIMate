@@ -17,6 +17,7 @@ import { getWorktreeNameFromPath } from '../../utils/pathUtils';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { FileEditsSidebar as FileEditsSidebarComponent, MaterialSymbol } from '@nimbalyst/runtime';
 import type { FileEditSummary } from '@nimbalyst/runtime';
+import { useI18n } from '../../i18n';
 import {
   diffTreeGroupByDirectoryAtom,
   setDiffTreeGroupByDirectoryAtom,
@@ -88,6 +89,7 @@ export const FilesEditedSidebar: React.FC<FilesEditedSidebarProps> = React.memo(
   onWorktreeArchived,
   isGitRepo = false,
 }) => {
+  const { t } = useI18n();
   const effectiveWorkspacePath = worktreePath || workspacePath;
   // Get all session IDs in this workstream (must be declared before useEffects that use it)
   const workstreamSessions = useAtomValue(workstreamSessionsAtom(workstreamId));
@@ -522,7 +524,7 @@ export const FilesEditedSidebar: React.FC<FilesEditedSidebarProps> = React.memo(
             }}
             disabled={!groupByDirectory}
             className="files-edited-sidebar__control-btn flex items-center justify-center w-6 h-6 border-none rounded bg-transparent text-[var(--nim-text-muted)] cursor-pointer hover:enabled:bg-[var(--nim-bg-tertiary)] disabled:text-[var(--nim-text-disabled)] disabled:cursor-default disabled:opacity-50"
-            title="Expand all"
+            title={t('filesScope.expandAll', 'Expand all')}
           >
             <MaterialSymbol icon="unfold_more" size={16} />
           </button>
@@ -532,7 +534,7 @@ export const FilesEditedSidebar: React.FC<FilesEditedSidebarProps> = React.memo(
             }}
             disabled={!groupByDirectory}
             className="files-edited-sidebar__control-btn flex items-center justify-center w-6 h-6 border-none rounded bg-transparent text-[var(--nim-text-muted)] cursor-pointer hover:enabled:bg-[var(--nim-bg-tertiary)] disabled:text-[var(--nim-text-disabled)] disabled:cursor-default disabled:opacity-50"
-            title="Collapse all"
+            title={t('filesScope.collapseAll', 'Collapse all')}
           >
             <MaterialSymbol icon="unfold_less" size={16} />
           </button>
@@ -546,17 +548,17 @@ export const FilesEditedSidebar: React.FC<FilesEditedSidebarProps> = React.memo(
             <MaterialSymbol icon="rate_review" size={16} className="files-edited-sidebar__keep-all-icon text-[var(--nim-warning)]" />
             <span className="files-edited-sidebar__keep-all-text text-xs text-[var(--nim-warning)] font-medium">
               <span className="files-edited-sidebar__keep-all-count font-semibold">{pendingReviewFiles.size}</span>
-              {' '}file{pendingReviewFiles.size !== 1 ? 's' : ''} pending review
+              {' '}{t('filesScope.filesPendingReview', '{count} files pending review').replace('{count}', pendingReviewFiles.size.toString())}
             </span>
           </div>
           <button
             className="files-edited-sidebar__keep-all-btn flex items-center gap-1 px-2.5 py-1 bg-transparent border border-[var(--nim-warning)] rounded text-[var(--nim-warning)] text-[11px] font-medium cursor-pointer transition-all duration-200 font-inherit hover:enabled:bg-[color-mix(in_srgb,var(--nim-warning)_15%,transparent)] disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleKeepAll}
             disabled={isClearing}
-            title="Accept all pending AI changes"
+            title={t('filesScope.acceptAllPending', 'Accept all pending AI changes')}
           >
             <MaterialSymbol icon="check_circle" size={14} />
-            {isClearing ? 'Keeping...' : 'Keep All'}
+            {isClearing ? t('filesScope.keeping', 'Keeping...') : t('filesScope.keepAll', 'Keep All')}
           </button>
         </div>
       )}

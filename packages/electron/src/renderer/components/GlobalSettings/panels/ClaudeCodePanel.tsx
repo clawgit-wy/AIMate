@@ -8,6 +8,7 @@ import {
   setClaudeUsageIndicatorEnabledAtom,
 } from '../../../store/atoms/claudeUsageAtoms';
 import { SettingsToggle, ToggleSwitch } from '../SettingsToggle';
+import { t } from '../../../i18n';
 
 // Built-in SDK version (injected at build time via electron.vite.config.ts define)
 declare const __CLAUDE_AGENT_SDK_VERSION__: string;
@@ -342,8 +343,8 @@ export function ClaudeCodePanel({
       {isMacOS && (
         <SettingsToggle
           variant="enable"
-          name="Show Usage Indicator"
-          description="Display API usage limits in the navigation gutter"
+          name={t('claudeCodePanel.showUsageIndicator')}
+          description={t('claudeCodePanel.usageIndicatorDesc')}
           checked={usageIndicatorEnabled}
           onChange={setUsageIndicatorEnabled}
         />
@@ -352,11 +353,11 @@ export function ClaudeCodePanel({
       {/* Custom Claude Installation */}
       <div className="provider-enable flex flex-col gap-2 py-4 mb-4 border-b border-[var(--nim-border)]">
         <div>
-          <span className="provider-enable-label text-sm font-medium text-[var(--nim-text)]">Custom Claude Installation</span>
+          <span className="provider-enable-label text-sm font-medium text-[var(--nim-text)]">{t('claudeCodePanel.customInstallation')}</span>
           <p className="text-xs text-[var(--nim-text-muted)] mt-1">
             {scope === 'project'
-              ? 'Override the Claude executable path for this project only. Leave empty to inherit the global setting.'
-              : 'Override the default Claude executable path. Use this to point to a custom Claude CLI wrapper (e.g., for corporate SSO authentication).'}
+              ? t('claudeCodePanel.customInstallationDescProject')
+              : t('claudeCodePanel.customInstallationDescGlobal')}
           </p>
         </div>
         <div className="flex items-center gap-2 mt-1">
@@ -380,25 +381,25 @@ export function ClaudeCodePanel({
             onClick={handleBrowseCustomClaudeCodePath}
             className="py-1.5 px-3 rounded text-xs font-medium bg-[var(--nim-bg-tertiary)] border border-[var(--nim-border)] text-[var(--nim-text)] hover:bg-[var(--nim-bg-hover)] transition-colors whitespace-nowrap"
           >
-            Browse
+            {t('claudeCodePanel.browse')}
           </button>
         </div>
         <p className="text-[11px] text-[var(--nim-text-faint)] leading-relaxed">
           {scope === 'project'
             ? hasProjectPathOverride
-              ? 'Project-specific path active. Clear the field to remove the override and inherit the global value.'
+              ? t('claudeCodePanel.customPathHintProjectOverride')
               : globalCustomClaudeCodePath
-                ? `Inheriting global path: ${globalCustomClaudeCodePath}. Type a value to override for this project only.`
-                : 'No global path set. Type a value to use a custom executable for this project only.'
-            : 'Leave empty to use the built-in SDK. Changes take effect on the next agent session.'}
+                ? t('claudeCodePanel.customPathHintProjectInheriting', { path: globalCustomClaudeCodePath })
+                : t('claudeCodePanel.customPathHintProjectEmpty')
+            : t('claudeCodePanel.customPathHintGlobal')}
         </p>
       </div>
 
       {/* Plan Tracking Toggle */}
       <SettingsToggle
         variant="enable"
-        name="Plan Tracking"
-        description="Save plans to nimbalyst-local/plans/ with tracking frontmatter. When disabled, plans use Claude Code's default behavior."
+        name={t('claudeCodePanel.planTracking')}
+        description={t('claudeCodePanel.planTrackingDesc')}
         checked={planTrackingEnabled}
         onChange={handleSetPlanTrackingEnabled}
       />
@@ -406,8 +407,8 @@ export function ClaudeCodePanel({
       {/* Agent Teams Toggle (Experimental) */}
       <SettingsToggle
         variant="enable"
-        name="Agent Teams (Experimental)"
-        description="Allow Claude to coordinate multiple agents working together as a team. Uses more tokens but enables parallel work."
+        name={t('claudeCodePanel.agentTeams')}
+        description={t('claudeCodePanel.agentTeamsDesc')}
         checked={agentTeamsEnabled}
         onChange={handleToggleAgentTeams}
       />
@@ -415,7 +416,7 @@ export function ClaudeCodePanel({
       { isWindowsPlatform && isCheckingClaudeWindowsStatus && (
         <div className="installation-status p-4 rounded-lg bg-[rgba(245,158,11,0.05)] border border-[rgba(245,158,11,0.2)]">
           <div className="installation-status-row flex items-center gap-3 py-1">
-            <span className="installation-status-label text-sm font-medium text-[var(--nim-text-muted)]">Checking Claude Code Installation...</span>
+            <span className="installation-status-label text-sm font-medium text-[var(--nim-text-muted)]">{t('claudeCodePanel.checkingInstallation')}</span>
           </div>
         </div>
       )}
@@ -423,45 +424,45 @@ export function ClaudeCodePanel({
         <div className="provider-panel-section py-4 mb-4 border-b border-[var(--nim-border)] last:border-b-0 last:mb-0 last:pb-0">
           { isWindowsPlatform ? (
             <>
-              <h4 className="provider-panel-section-title text-base font-semibold mb-3 text-[var(--nim-text)]">Claude Code for Windows Installation</h4>
+              <h4 className="provider-panel-section-title text-base font-semibold mb-3 text-[var(--nim-text)]">{t('claudeCodePanel.windowsInstallationTitle')}</h4>
               <p className="text-xs text-[var(--nim-text-muted)] mt-3 leading-relaxed">
-                Nimbalyst requires Claude Code for Windows to be installed to use the Claude Code provider.
+                {t('claudeCodePanel.windowsInstallationDesc')}
               </p>
               { Boolean(claudeCodeWindowsStatus?.claudeCodeVersion) ? (
                 <div className="installation-status mt-3 p-4 rounded-lg bg-[rgba(16,185,129,0.05)] border border-[rgba(16,185,129,0.2)]">
                   <div className="installation-status-row flex items-center gap-3 py-1">
-                    <span className="installation-status-label text-sm font-medium text-[var(--nim-text-muted)]">Claude Code Version:</span>
+                    <span className="installation-status-label text-sm font-medium text-[var(--nim-text-muted)]">{t('claudeCodePanel.version')}</span>
                     <span className="installation-status-value text-sm text-[var(--nim-text)]">{claudeCodeWindowsStatus?.claudeCodeVersion}</span>
                   </div>
                 </div>
               ): (
                 <div className="installation-status mt-3 p-4 rounded-lg bg-[rgba(239,68,68,0.05)] border border-[rgba(239,68,68,0.2)]">
                   <div className="text-xs text-[var(--nim-text-muted)] mt-3 leading-relaxed">
-                    <p className="mb-2">Install Claude Code for Windows by following the instructions below:</p>
+                    <p className="mb-2">{t('claudeCodePanel.installInstructions')}</p>
                     <ol className="list-decimal list-inside space-y-1 mb-4">
-                      <li>Install <a href="https://git-scm.com/install/windows" className="text-[var(--nim-link)] hover:underline">Git for Windows</a>. This is a prerequisite for installing Claude Code</li>
-                      <li>Install <a href="https://code.claude.com/docs/en/overview#windows" className="text-[var(--nim-link)] hover:underline">Claude Code for Windows</a>.</li>
-                      <li>When finished, click the button below to recheck / verify the installation.</li>
+                      <li><a href="https://git-scm.com/install/windows" className="text-[var(--nim-link)] hover:underline">Git for Windows</a>. {t('claudeCodePanel.installGitStep')}</li>
+                      <li><a href="https://code.claude.com/docs/en/overview#windows" className="text-[var(--nim-link)] hover:underline">Claude Code for Windows</a>.</li>
+                      <li>{t('claudeCodePanel.installFinishStep')}</li>
                     </ol>
-                    <button className="nim-btn-primary" onClick={checkClaudeCodeWindowsInstallation}>Re-verify Claude Code Installation</button>
+                    <button className="nim-btn-primary" onClick={checkClaudeCodeWindowsInstallation}>{t('claudeCodePanel.reverifyButton')}</button>
                   </div>
                 </div>
               )}
             </>
           ): (
             <>
-              <h4 className="provider-panel-section-title text-base font-semibold mb-3 text-[var(--nim-text)]">Claude Agent SDK</h4>
+              <h4 className="provider-panel-section-title text-base font-semibold mb-3 text-[var(--nim-text)]">{t('claudeCodePanel.sdkTitle')}</h4>
               <div className="installation-status p-4 rounded-lg bg-[rgba(16,185,129,0.05)] border border-[rgba(16,185,129,0.2)]">
                 <div className="installation-status-row flex items-center gap-3 py-1">
-                  <span className="installation-status-label text-sm font-medium text-[var(--nim-text-muted)]">Version:</span>
+                  <span className="installation-status-label text-sm font-medium text-[var(--nim-text-muted)]">{t('claudeCodePanel.version')}</span>
                   <span className="installation-status-value text-sm text-[var(--nim-text)]">{BUNDLED_SDK_VERSION}</span>
                 </div>
                 <div className="installation-status-row flex items-center gap-3 py-1">
-                  <span className="installation-status-label text-sm font-medium text-[var(--nim-text-muted)]">Source:</span>
-                  <span className="installation-status-value text-sm text-[var(--nim-text)]">Built-in (bundled with app)</span>
+                  <span className="installation-status-label text-sm font-medium text-[var(--nim-text-muted)]">{t('claudeCodePanel.source')}</span>
+                  <span className="installation-status-value text-sm text-[var(--nim-text)]">{t('claudeCodePanel.builtinSource')}</span>
                 </div>
                 <p className="text-xs leading-relaxed text-[var(--nim-text-muted)] mt-3">
-                  Nimbalyst includes the Claude Agent SDK. No additional installation required.
+                  {t('claudeCodePanel.builtinDesc')}
                 </p>
               </div>
             </>
@@ -472,11 +473,11 @@ export function ClaudeCodePanel({
       {config.enabled && isClaudeCodeWindowsReady() && (
         <>
           <div className="provider-panel-section py-4 mb-4 border-b border-[var(--nim-border)] last:border-b-0 last:mb-0 last:pb-0">
-            <h4 className="provider-panel-section-title text-base font-semibold mb-3 text-[var(--nim-text)]">Authentication</h4>
+            <h4 className="provider-panel-section-title text-base font-semibold mb-3 text-[var(--nim-text)]">{t('claudeCodePanel.authentication')}</h4>
             <div className="api-key-section mt-4">
               {/* Authentication Method Selector */}
               <div className="auth-method-selector mb-4">
-                <label className="auth-method-label block text-[13px] font-semibold mb-2 text-[var(--nim-text)]">Authentication Method</label>
+                <label className="auth-method-label block text-[13px] font-semibold mb-2 text-[var(--nim-text)]">{t('claudeCodePanel.authMethod')}</label>
                 <div className="auth-method-buttons flex gap-2">
                   <button
                     className={`auth-method-button flex-1 py-2.5 px-4 rounded-md text-[13px] font-medium cursor-pointer transition-all border ${

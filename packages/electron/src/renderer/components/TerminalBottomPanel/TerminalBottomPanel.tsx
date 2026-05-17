@@ -32,6 +32,7 @@ import {
   type TerminalInstance,
 } from '../../store/atoms/terminals';
 import { selectedWorkstreamAtom, sessionWorktreeIdAtom } from '../../store/atoms/sessions';
+import { useI18n } from '../../i18n';
 
 interface TerminalBottomPanelProps {
   workspacePath: string;
@@ -78,6 +79,7 @@ export const TerminalBottomPanel: React.FC<TerminalBottomPanelProps> = ({
   minHeight = 150,
   maxHeight = 600,
 }) => {
+  const { t } = useI18n();
   // Panel state from Jotai atoms
   const visible = useAtomValue(terminalPanelVisibleAtom);
   const height = useAtomValue(terminalPanelHeightAtom);
@@ -336,7 +338,7 @@ export const TerminalBottomPanel: React.FC<TerminalBottomPanelProps> = ({
             <button
               className="terminal-bottom-panel-new-tab flex items-center justify-center w-6 h-6 p-0 bg-transparent border-none text-[var(--nim-text-muted)] cursor-pointer rounded shrink-0 transition-colors duration-150 hover:bg-[var(--nim-bg-hover)] hover:text-[var(--nim-text)]"
               onClick={handleCreateTerminal}
-              title="New Terminal"
+              title={t('terminal.newTerminal', 'New Terminal')}
             >
               <MaterialSymbol icon="add" size={16} />
             </button>
@@ -344,7 +346,7 @@ export const TerminalBottomPanel: React.FC<TerminalBottomPanelProps> = ({
           <button
             className="terminal-bottom-panel-close flex items-center justify-center w-6 h-6 p-0 bg-transparent border-none text-[var(--nim-text-muted)] cursor-pointer rounded ml-2 shrink-0 transition-colors duration-150 hover:bg-[var(--nim-bg-hover)] hover:text-[var(--nim-text)]"
             onClick={handleClose}
-            title="Close panel"
+            title={t('terminal.closePanel', 'Close panel')}
           >
             <MaterialSymbol icon="close" size={18} />
           </button>

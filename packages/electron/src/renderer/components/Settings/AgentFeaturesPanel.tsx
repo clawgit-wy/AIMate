@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { usePostHog } from 'posthog-js/react';
 import { MaterialSymbol } from '@nimbalyst/runtime';
+import { t } from '../../i18n';
 import {
   advancedSettingsAtom,
   setAdvancedSettingsAtom,
@@ -148,10 +149,10 @@ export function AgentFeaturesPanel() {
     <div className="provider-panel flex flex-col">
       <div className="provider-panel-header mb-6 pb-4 border-b border-[var(--nim-border)]">
         <h3 className="provider-panel-title text-xl font-semibold leading-tight mb-2 text-[var(--nim-text)]">
-          Agent Features
+          {t('agentFeatures.title', 'Agent Features')}
         </h3>
         <p className="provider-panel-description text-sm leading-relaxed text-[var(--nim-text-muted)]">
-          Settings that control how agent sessions behave.
+          {t('agentFeatures.description', 'Settings that control how agent sessions behave.')}
         </p>
       </div>
 
@@ -162,17 +163,17 @@ export function AgentFeaturesPanel() {
             setAutoCommitEnabled(checked);
             posthog?.capture('auto_commit_toggled', { enabled: checked });
           }}
-          name="Auto-approve Commits"
-          description="Automatically approve when Claude proposes git commits."
+          name={t('agentFeatures.autoApproveCommits', 'Auto-approve Commits')}
+          description={t('agentFeatures.autoApproveCommitsDesc', 'Automatically approve when Claude proposes git commits.')}
         />
 
         <div className="agent-preferred-language flex items-start justify-between gap-4 py-3">
           <div className="flex-1 min-w-0">
             <div className="text-sm font-medium text-[var(--nim-text)] leading-tight">
-              Preferred Agent Language
+              {t('agentFeatures.preferredAgentLanguage', 'Preferred Agent Language')}
             </div>
             <div className="text-xs text-[var(--nim-text-muted)] leading-snug mt-0.5">
-              Preferred language for AI-generated session names (e.g. "Japanese", "ja", "Spanish"). Leave blank to let the agent pick based on the conversation.
+              {t('agentFeatures.preferredLanguageHint', 'Preferred language for AI-generated session names (e.g. "Japanese", "ja", "Spanish"). Leave blank to let the agent pick based on the conversation.')}
             </div>
           </div>
           <input
@@ -188,23 +189,23 @@ export function AgentFeaturesPanel() {
 
       <div className="provider-panel-section">
         <div className="flex items-center gap-2 mb-2">
-          <h4 className="provider-panel-section-title text-base font-semibold text-[var(--nim-text)] m-0">Experimental</h4>
+          <h4 className="provider-panel-section-title text-base font-semibold text-[var(--nim-text)] m-0">{t('agentFeatures.experimental', 'Experimental')}</h4>
           <AlphaBadge size="sm" />
         </div>
 
         <div className="flex items-start gap-2 p-3 mb-3 rounded border border-[var(--nim-warning)]/30 bg-[var(--nim-warning)]/10">
           <MaterialSymbol icon="science" size={16} className="text-[var(--nim-warning)] shrink-0 mt-0.5" />
           <p className="m-0 text-[13px] text-[var(--nim-text)] leading-snug">
-            These features may change, regress, or be removed. Some require a restart to take full effect.
+            {t('agentFeatures.experimentalWarning', 'These features may change, regress, or be removed. Some require a restart to take full effect.')}
           </p>
         </div>
 
         <div className="mb-4 rounded border border-[var(--nim-border)] bg-[var(--nim-bg-secondary)] p-3">
           <h5 className="text-sm font-semibold mb-1.5 text-[var(--nim-text)]">
-            Agent skills and commands compatibility
+            {t('agentFeatures.skillsAndCommandsCompatibility', 'Agent skills and commands compatibility')}
           </h5>
           <p className="text-xs leading-relaxed text-[var(--nim-text-muted)] mb-2">
-            Control which command and skill sources feed the shared picker and which generated compatibility exports are written for Claude Code and Codex.
+            {t('agentFeatures.skillsAndCommandsDescription', 'Control which command and skill sources feed the shared picker and which generated compatibility exports are written for Claude Code and Codex.')}
           </p>
 
           <div className="border-b border-[var(--nim-border)] mb-2">
@@ -212,29 +213,29 @@ export function AgentFeaturesPanel() {
               checked={workflowSourceSettings.workspaceClaudeCompatibilityEnabled}
               onChange={(checked) => handleWorkflowSourceToggle('workspaceClaudeCompatibilityEnabled', checked)}
               disabled={workflowSettingsLoading}
-              name="Workspace Claude compatibility"
-              description="Import project and user .claude commands and skills into the shared workflow registry."
+              name={t('agentFeatures.workspaceClaudeCompatibility', 'Workspace Claude compatibility')}
+              description={t('agentFeatures.workspaceClaudeCompatibilityDesc', 'Import project and user .claude commands and skills into the shared workflow registry.')}
             />
             <SettingsToggle
               checked={workflowSourceSettings.includeProjectClaudeSources}
               onChange={(checked) => handleWorkflowSourceToggle('includeProjectClaudeSources', checked)}
               disabled={workflowSettingsLoading || !workflowSourceSettings.workspaceClaudeCompatibilityEnabled}
-              name="Project .claude sources"
-              description="Include .claude/commands and .claude/skills from the current workspace."
+              name={t('agentFeatures.projectClaudeSources', 'Project .claude sources')}
+              description={t('agentFeatures.projectClaudeSourcesDesc', 'Include .claude/commands and .claude/skills from the current workspace.')}
             />
             <SettingsToggle
               checked={workflowSourceSettings.includeUserClaudeSources}
               onChange={(checked) => handleWorkflowSourceToggle('includeUserClaudeSources', checked)}
               disabled={workflowSettingsLoading || !workflowSourceSettings.workspaceClaudeCompatibilityEnabled}
-              name="User .claude sources"
-              description="Include ~/.claude commands and skills when you want user-level compatibility in the picker and exports."
+              name={t('agentFeatures.userClaudeSources', 'User .claude sources')}
+              description={t('agentFeatures.userClaudeSourcesDesc', 'Include ~/.claude commands and skills when you want user-level compatibility in the picker and exports.')}
             />
             <SettingsToggle
               checked={workflowSourceSettings.extensionWorkflowsEnabled}
               onChange={(checked) => handleWorkflowSourceToggle('extensionWorkflowsEnabled', checked)}
               disabled={workflowSettingsLoading}
-              name="Extension workflows"
-              description="Load provider-neutral agentWorkflows contributions and legacy Claude plugin workflows from enabled extensions."
+              name={t('agentFeatures.extensionWorkflows', 'Extension workflows')}
+              description={t('agentFeatures.extensionWorkflowsDesc', 'Load provider-neutral agentWorkflows contributions and legacy Claude plugin workflows from enabled extensions.')}
             />
           </div>
 
@@ -243,15 +244,15 @@ export function AgentFeaturesPanel() {
               checked={workflowExportSettings.codexEnabled}
               onChange={(checked) => handleWorkflowExportToggle('codexEnabled', checked)}
               disabled={workflowSettingsLoading}
-              name="Codex generated skills"
-              description="Export registry workflows into .agents/skills/.nimbalyst-generated before Codex turns."
+              name={t('agentFeatures.codexGeneratedSkills', 'Codex generated skills')}
+              description={t('agentFeatures.codexGeneratedSkillsDesc', 'Export registry workflows into .agents/skills/.nimbalyst-generated before Codex turns.')}
             />
             <SettingsToggle
               checked={workflowExportSettings.claudeGeneratedExtensionWorkflowsEnabled}
               onChange={(checked) => handleWorkflowExportToggle('claudeGeneratedExtensionWorkflowsEnabled', checked)}
               disabled={workflowSettingsLoading}
-              name="Claude generated extension workflows"
-              description="Generate Claude plugin shims for extension agentWorkflows under .claude/plugins/.nimbalyst-generated."
+              name={t('agentFeatures.claudeGeneratedExtensionWorkflows', 'Claude generated extension workflows')}
+              description={t('agentFeatures.claudeGeneratedExtensionWorkflowsDesc', 'Generate Claude plugin shims for extension agentWorkflows under .claude/plugins/.nimbalyst-generated.')}
             />
           </div>
         </div>
@@ -269,37 +270,37 @@ export function AgentFeaturesPanel() {
         <SettingsToggle
           checked={chatShowToolCalls}
           onChange={(checked) => updateAIDebugSettings({ chatShowToolCalls: checked })}
-          name="Show Tool Calls in Chat"
-          description="Display tool call rows in the AI chat view. Turn off to hide tool activity and see only the conversational messages."
+          name={t('agentFeatures.showToolCallsInChat', 'Show Tool Calls in Chat')}
+          description={t('agentFeatures.showToolCallsInChatDesc', 'Display tool call rows in the AI chat view. Turn off to hide tool activity and see only the conversational messages.')}
         />
       </div>
 
       {isDevelopment && (
         <div className="provider-panel-section py-4 mt-4 border-t border-[var(--nim-border)]">
-          <h4 className="provider-panel-section-title text-base font-semibold mb-2 text-[var(--nim-text)]">Developer Options</h4>
+          <h4 className="provider-panel-section-title text-base font-semibold mb-2 text-[var(--nim-text)]">{t('agentFeatures.developerOptions', 'Developer Options')}</h4>
           <p className="text-sm leading-relaxed text-[var(--nim-text-muted)] mb-2">
-            Only available in development mode.
+            {t('agentFeatures.developerOnly', 'Only available in development mode.')}
           </p>
 
           <SettingsToggle
             checked={showToolCalls}
             onChange={(checked) => updateAIDebugSettings({ showToolCalls: checked })}
-            name="Show All Tool Calls"
-            description="Display all MCP tool calls in the AI chat sidebar, including Edit/applyDiff calls."
+            name={t('agentFeatures.showAllToolCalls', 'Show All Tool Calls')}
+            description={t('agentFeatures.showAllToolCallsDesc', 'Display all MCP tool calls in the AI chat sidebar, including Edit/applyDiff calls.')}
           />
 
           <SettingsToggle
             checked={aiDebugLogging}
             onChange={(checked) => updateAIDebugSettings({ aiDebugLogging: checked })}
-            name="AI Debug Logging"
-            description="Capture detailed logs of all AI editing operations including LLM requests/responses."
+            name={t('agentFeatures.aiDebugLogging', 'AI Debug Logging')}
+            description={t('agentFeatures.aiDebugLoggingDesc', 'Capture detailed logs of all AI editing operations including LLM requests/responses.')}
           />
 
           <SettingsToggle
             checked={showPromptAdditions}
             onChange={(checked) => updateAIDebugSettings({ showPromptAdditions: checked })}
-            name="Show Prompt Additions"
-            description="Display system prompt additions and context that Nimbalyst appends to Claude Code requests."
+            name={t('agentFeatures.showPromptAdditions', 'Show Prompt Additions')}
+            description={t('agentFeatures.showPromptAdditionsDesc', 'Display system prompt additions and context that Nimbalyst appends to Claude Code requests.')}
           />
         </div>
       )}

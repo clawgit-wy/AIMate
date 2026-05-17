@@ -8,6 +8,7 @@ import type { TrackerFilterChip } from '../../store/atoms/trackers';
 import type { ViewMode } from './TrackerMainView';
 import { WorkspaceSummaryHeader } from '../WorkspaceSummaryHeader';
 import { AlphaBadge } from '../common/AlphaBadge';
+import { useI18n } from '../../i18n';
 
 interface TrackerSidebarProps {
   workspacePath?: string;
@@ -21,12 +22,12 @@ interface TrackerSidebarProps {
   onViewModeChange: (mode: ViewMode) => void;
 }
 
-const FILTER_CHIPS: { id: TrackerFilterChip; label: string; icon: string }[] = [
-  { id: 'mine', label: 'Mine', icon: 'person' },
-  { id: 'unassigned', label: 'Unassigned', icon: 'person_off' },
-  { id: 'high-priority', label: 'High Priority', icon: 'priority_high' },
-  { id: 'recently-updated', label: 'Recent', icon: 'schedule' },
-  { id: 'archived', label: 'Archived', icon: 'archive' },
+const FILTER_CHIPS_CONFIG: { id: TrackerFilterChip; labelKey: string; icon: string }[] = [
+  { id: 'mine', labelKey: 'tracker.filterMine', icon: 'person' },
+  { id: 'unassigned', labelKey: 'tracker.filterUnassigned', icon: 'person_off' },
+  { id: 'high-priority', labelKey: 'tracker.filterHighPriority', icon: 'priority_high' },
+  { id: 'recently-updated', labelKey: 'tracker.filterRecent', icon: 'schedule' },
+  { id: 'archived', labelKey: 'tracker.filterArchived', icon: 'archive' },
 ];
 
 /** Small component so each sidebar row subscribes to its own atom */
@@ -46,6 +47,7 @@ export const TrackerSidebar: React.FC<TrackerSidebarProps> = ({
   onToggleFilter,
   onViewModeChange,
 }) => {
+  const { t } = useI18n();
   return (
     <div className="tracker-sidebar w-full h-full flex flex-col bg-nim-secondary overflow-hidden" data-testid="tracker-sidebar">
       {workspacePath && (
@@ -62,7 +64,7 @@ export const TrackerSidebar: React.FC<TrackerSidebarProps> = ({
                         : 'bg-nim-secondary text-nim-muted hover:text-nim'
                     }`}
                     onClick={() => onViewModeChange('table')}
-                    title="Table view"
+                    title={t('tracker.tableView', 'Table view')}
                   >
                     <MaterialSymbol icon="table_rows" size={16} />
                   </button>
@@ -73,7 +75,7 @@ export const TrackerSidebar: React.FC<TrackerSidebarProps> = ({
                         : 'bg-nim-secondary text-nim-muted hover:text-nim'
                     }`}
                     onClick={() => onViewModeChange('kanban')}
-                    title="Kanban view (alpha)"
+                    title={t('tracker.kanbanViewAlpha', 'Kanban view (alpha)')}
                   >
                     <MaterialSymbol icon="view_kanban" size={16} />
                     <AlphaBadge size="dot" className="absolute -top-1 -right-1 pointer-events-none" />
@@ -84,17 +86,17 @@ export const TrackerSidebar: React.FC<TrackerSidebarProps> = ({
         />
       )}
       <div className="px-3 py-1.5 border-b border-nim text-[11px] font-semibold text-nim-muted uppercase tracking-wider">
-        Trackers
+        {t('tracker.trackers', 'Trackers')}
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {/* Filter chips (multi-select) */}
         <div className="px-2 pt-2 pb-1">
           <div className="text-[10px] font-semibold text-nim-faint uppercase tracking-wider px-1 mb-1.5">
-            Filters
+            {t('tracker.filters', 'Filters')}
           </div>
           <div className="flex flex-wrap gap-1">
-            {FILTER_CHIPS.map((chip) => {
+            {FILTER_CHIPS_CONFIG.map((chip) => {
               const isActive = activeFilters.includes(chip.id);
               return (
                 <button
@@ -108,7 +110,7 @@ export const TrackerSidebar: React.FC<TrackerSidebarProps> = ({
                   onClick={() => onToggleFilter(chip.id)}
                 >
                   <MaterialSymbol icon={chip.icon} size={13} />
-                  {chip.label}
+                  {t(chip.labelKey, chip.labelKey)}
                 </button>
               );
             })}
@@ -118,7 +120,7 @@ export const TrackerSidebar: React.FC<TrackerSidebarProps> = ({
               className="mt-1 px-1 text-[10px] text-nim-faint hover:text-nim-muted transition-colors"
               onClick={() => activeFilters.forEach(f => onToggleFilter(f))}
             >
-              Clear filters
+              {t('tracker.clearFilters', 'Clear filters')}
             </button>
           )}
         </div>

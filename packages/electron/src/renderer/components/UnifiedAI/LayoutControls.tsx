@@ -10,6 +10,7 @@
 import React from 'react';
 import type { SessionLayoutMode } from '../../store';
 import { HelpTooltip } from '../../help';
+import { useI18n } from '../../i18n';
 
 // Custom SVG icons for layout modes
 // Each shows a panel with a divider line indicating where the split is
@@ -45,13 +46,14 @@ interface LayoutControlsProps {
 }
 
 export function LayoutControls({ mode, hasTabs, onModeChange }: LayoutControlsProps) {
+  const { t } = useI18n();
   return (
     <HelpTooltip testId="layout-controls">
       <div className="layout-controls flex items-center gap-0.5 p-1 bg-nim-tertiary rounded-md" data-testid="layout-controls">
         <button
           className={`layout-control-btn with-label flex items-center justify-center gap-1 w-auto h-6 px-2 py-0 border-none rounded cursor-pointer transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed ${mode === 'editor' ? 'active bg-nim-primary text-white hover:bg-nim-primary-hover' : 'bg-transparent text-nim-muted hover:enabled:bg-nim-hover hover:enabled:text-nim'}`}
           onClick={() => onModeChange('editor')}
-          aria-label="Maximize editor"
+          aria-label={t('layout.maximizeEditor', 'Maximize editor')}
           disabled={!hasTabs}
           data-testid="layout-maximize-editor"
         >
@@ -61,7 +63,7 @@ export function LayoutControls({ mode, hasTabs, onModeChange }: LayoutControlsPr
         <button
           className={`layout-control-btn flex items-center justify-center w-7 h-6 p-0 border-none rounded cursor-pointer transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed ${mode === 'split' ? 'active bg-nim-primary text-white hover:bg-nim-primary-hover' : 'bg-transparent text-nim-muted hover:enabled:bg-nim-hover hover:enabled:text-nim'}`}
           onClick={() => onModeChange('split')}
-          aria-label="Split view"
+          aria-label={t('layout.splitView', 'Split view')}
           disabled={!hasTabs}
           data-testid="layout-split-view"
         >
@@ -70,7 +72,7 @@ export function LayoutControls({ mode, hasTabs, onModeChange }: LayoutControlsPr
         <button
           className={`layout-control-btn with-label flex items-center justify-center gap-1 w-auto h-6 px-2 py-0 border-none rounded cursor-pointer transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed ${mode === 'transcript' ? 'active bg-nim-primary text-white hover:bg-nim-primary-hover' : 'bg-transparent text-nim-muted hover:enabled:bg-nim-hover hover:enabled:text-nim'}`}
           onClick={() => onModeChange('transcript')}
-          aria-label="Maximize transcript"
+          aria-label={t('layout.maximizeTranscript', 'Maximize transcript')}
           data-testid="layout-maximize-transcript"
         >
           <TranscriptMaxIcon />

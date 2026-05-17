@@ -419,6 +419,23 @@ interface RichTranscriptViewProps {
   workspacePath?: string;
   /** Optional: render additional content in the empty state (e.g., command suggestions) */
   renderEmptyExtra?: () => React.ReactNode;
+  /** Optional: Translations for UI text (allows host app to provide localized strings) */
+  translations?: {
+    readyToAssist?: string;
+    webResearch?: string;
+    codeAnalysis?: string;
+    fileEditing?: string;
+    enterTaskBelow?: string;
+    thinking?: string;
+    waitingForComplete?: string;
+    noMatches?: string;
+    caseSensitive?: string;
+    caseInsensitive?: string;
+    showFullMessage?: string;
+    collapseMessage?: string;
+    viewResult?: string;
+    result?: string;
+  };
   /** Optional: Read a file from the filesystem (for custom widgets that need to load persisted files) */
   readFile?: (filePath: string) => Promise<{ success: boolean; content?: string; error?: string }>;
   /** Optional: Open a file in the editor */
@@ -957,7 +974,7 @@ export const extractEditsFromToolMessage = (message: TranscriptViewMessage): any
 export const RichTranscriptView = React.forwardRef<
   { scrollToMessage: (index: number) => void; scrollToTop: () => void },
   RichTranscriptViewProps
->(({ sessionId, sessionStatus, isProcessing, hasPendingInteractivePrompt, messages, provider, settings: propsSettings, onSettingsChange, showSettings, documentContext, workspacePath, renderEmptyExtra, readFile, onOpenFile, onOpenSession, onCompact, promptAdditions, currentTeammates, waitingForNoun, appStartTime, getToolCallDiffs, renderEmbeddedFile, canEmbedFile, onSearchBarVisibilityChange }, ref) => {
+>(({ sessionId, sessionStatus, isProcessing, hasPendingInteractivePrompt, messages, provider, settings: propsSettings, onSettingsChange, showSettings, documentContext, workspacePath, renderEmptyExtra, translations, readFile, onOpenFile, onOpenSession, onCompact, promptAdditions, currentTeammates, waitingForNoun, appStartTime, getToolCallDiffs, renderEmbeddedFile, canEmbedFile, onSearchBarVisibilityChange }, ref) => {
   const [collapsedMessages, setCollapsedMessages] = useState<Set<number>>(new Set());
   const [expandedTools, setExpandedTools] = useState<Set<string>>(new Set());
   const scrollButtonRef = useRef<HTMLDivElement>(null);
@@ -1041,9 +1058,10 @@ export const RichTranscriptView = React.forwardRef<
       const singular = waitingForNoun || 'agent';
       const plural = singular.endsWith('s') ? singular : `${singular}s`;
       const label = runningTeammates.length === 1 ? singular : plural;
-      return `Waiting for ${runningTeammates.length} ${label} to complete...`;
+      const waitingTemplate = translations?.waitingForComplete || 'Waiting for {count} {label} to complete...';
+      return waitingTemplate.replace('{count}', runningTeammates.length.toString()).replace('{label}', label);
     }
-    return 'Thinking...';
+    return translations?.thinking || 'Thinking...';
   }, [isProcessing, isWaitingForResponse, runningTeammates, sessionStatus, waitingForNoun]);
 
 
@@ -1720,7 +1738,7 @@ export const RichTranscriptView = React.forwardRef<
               {tool.result && (
                 <details className="rich-transcript-tool-details my-2" open={!isSubAgent}>
                   <summary className="rich-transcript-tool-details-summary text-xs text-[var(--nim-text-faint)] cursor-pointer py-1 select-none hover:text-[var(--nim-text-muted)]">
-                    {isSubAgent ? 'View result' : 'Result'}
+                    {isSubAgent ? (translations?.viewResult || 'View result') : (translations?.result || 'Result')}
                   </summary>
                   <div className="rich-transcript-tool-details-content mt-1 text-sm">
                     {resultText ? (
@@ -1767,6 +1785,13 @@ export const RichTranscriptView = React.forwardRef<
             vlistRef.current.scrollToIndex(index, { align: 'center' });
           }
         }}
+        translations={{
+          noMatches: translations?.noMatches,
+          caseSensitive: translations?.caseSensitive,
+          caseInsensitive: translations?.caseInsensitive,
+          previousMatch: translations?.previousMatch,
+          nextMatch: translations?.nextMatch
+        }}
       />
 
       {/* Settings Panel */}
@@ -1811,15 +1836,15 @@ export const RichTranscriptView = React.forwardRef<
             <div className="rich-transcript-empty flex flex-col items-center p-8 px-4 h-full max-w-4xl mx-auto">
               <div className="rich-transcript-empty-content flex-1 flex flex-col justify-center max-w-[400px] text-left">
                 <div className="rich-transcript-empty-title text-[var(--nim-text-faint)] text-sm mb-2 leading-relaxed">
-                  {getProviderDisplayName(provider)} is ready to assist with:
+                  {(translations?.readyToAssist || '{provider} is ready to assist with:').replace('{provider}', getProviderDisplayName(provider))}
                 </div>
                 <ul className="rich-transcript-empty-capabilities list-none p-0 m-0 ml-6">
-                  <li className="text-[var(--nim-text-faint)] text-sm py-1 pl-3 relative leading-relaxed before:content-['•'] before:absolute before:left-0 before:text-[var(--nim-text-faint)]">Web research</li>
-                  <li className="text-[var(--nim-text-faint)] text-sm py-1 pl-3 relative leading-relaxed before:content-['•'] before:absolute before:left-0 before:text-[var(--nim-text-faint)]">Code analysis</li>
-                  <li className="text-[var(--nim-text-faint)] text-sm py-1 pl-3 relative leading-relaxed before:content-['•'] before:absolute before:left-0 before:text-[var(--nim-text-faint)]">File editing</li>
+                  <li className="text-[var(--nim-text-faint)] text-sm py-1 pl-3 relative leading-relaxed before:content-['•'] before:absolute before:left-0 before:text-[var(--nim-text-faint)]">{translations?.webResearch || 'Web research'}</li>
+                  <li className="text-[var(--nim-text-faint)] text-sm py-1 pl-3 relative leading-relaxed before:content-['•'] before:absolute before:left-0 before:text-[var(--nim-text-faint)]">{translations?.codeAnalysis || 'Code analysis'}</li>
+                  <li className="text-[var(--nim-text-faint)] text-sm py-1 pl-3 relative leading-relaxed before:content-['•'] before:absolute before:left-0 before:text-[var(--nim-text-faint)]">{translations?.fileEditing || 'File editing'}</li>
                 </ul>
                 <div className="rich-transcript-empty-footer text-[var(--nim-text-faint)] text-sm mt-3 leading-relaxed">
-                  Enter a task below to get started
+                  {translations?.enterTaskBelow || 'Enter a task below to get started'}
                 </div>
               </div>
               {renderEmptyExtra?.()}

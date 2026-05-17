@@ -6,6 +6,7 @@ import type { SessionData } from '@nimbalyst/runtime/ai/server/types';
 import { formatDate } from '@nimbalyst/runtime';
 import { sessionProcessingAtom, sessionUnreadAtom } from '../../store';
 import { useFloatingMenu, FloatingPortal } from '../../hooks/useFloatingMenu';
+import { t } from '../../i18n';
 
 /**
  * Status indicator that subscribes to session atoms.
@@ -70,7 +71,7 @@ export function SessionDropdown({
 
   const getCurrentSessionName = () => {
     const session = getCurrentSession();
-    if (!session) return 'New Session';
+    if (!session) return t('session.newSession');
     if (session.title) return session.title;
     return formatDate(session.createdAt);
   };

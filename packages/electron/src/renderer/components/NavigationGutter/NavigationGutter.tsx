@@ -24,6 +24,7 @@ import { AlphaBadge } from '../common/AlphaBadge';
 import { UserMenuPopover } from './UserMenuPopover';
 import { GutterContextMenu } from './GutterContextMenu';
 import { type HideableGutterButton, hiddenGutterButtonsAtom } from '../../store/atoms/projectState';
+import { useI18n } from '../../i18n';
 
 export type NavigationMode = 'planning' | 'coding';
 export type SidebarView = 'files' | 'settings';
@@ -92,6 +93,7 @@ export const NavigationGutter: React.FC<NavigationGutterProps> = ({
   activeExtensionBottomPanel,
   onExtensionBottomPanelChange,
 }) => {
+  const { t } = useI18n();
   const posthog = usePostHog();
   const isDevMode = import.meta.env.DEV || window.IS_DEV_MODE;
   const setActiveSession = useSetAtom(setActiveSessionAtom);
@@ -205,7 +207,7 @@ export const NavigationGutter: React.FC<NavigationGutterProps> = ({
   const feedbackButton: NavButton = {
     id: 'feedback',
     icon: 'feedback',
-    label: 'Send Feedback',
+    label: t('navigation.sendFeedback', 'Send Feedback'),
   };
 
   const handleButtonClick = (button: NavButton) => {

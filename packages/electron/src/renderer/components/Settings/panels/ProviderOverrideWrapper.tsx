@@ -8,6 +8,7 @@
 import React, { ReactNode, useEffect, useMemo } from 'react';
 import { useAtom } from 'jotai';
 import { MaterialSymbol } from '@nimbalyst/runtime';
+import { t } from '../../../i18n';
 import {
   workspaceAISettingsAtomFamily,
   loadWorkspaceAISettings,
@@ -92,7 +93,7 @@ export function ProviderOverrideWrapper({
   if (loading) {
     return (
       <div className="provider-override-wrapper flex flex-col h-full items-center justify-center text-[var(--nim-text-muted)]">
-        Loading...
+        {t('common.loading', 'Loading...')}
       </div>
     );
   }
@@ -117,7 +118,7 @@ export function ProviderOverrideWrapper({
               <>
                 <MaterialSymbol icon="tune" size={16} className="shrink-0" />
                 <span>
-                  Project override active for{' '}
+                  {t('providerOverride.projectOverrideActive', 'Project override active for ')}
                   <strong className="font-medium text-[var(--nim-primary)]">{workspaceName}</strong>
                 </span>
               </>
@@ -125,7 +126,7 @@ export function ProviderOverrideWrapper({
               <>
                 <MaterialSymbol icon="info" size={16} className="shrink-0" />
                 <span>
-                  Using global {providerName} settings
+                  {t('providerOverride.usingGlobalSettings', 'Using global {providerName} settings').replace('{providerName}', providerName)}
                 </span>
               </>
             )}
@@ -150,7 +151,7 @@ export function ProviderOverrideWrapper({
               isOverriding ? 'text-[var(--nim-primary)]' : 'text-[var(--nim-text-muted)]'
             }`}
           >
-            Override
+            {t('providerOverride.override', 'Override')}
           </span>
         </label>
       </div>
@@ -162,8 +163,7 @@ export function ProviderOverrideWrapper({
 
       {!isOverriding && (
         <div className="override-hint px-4 py-3 text-xs text-center text-[var(--nim-text-faint)] bg-[var(--nim-bg-secondary)] border-t border-[var(--nim-border)]">
-          Enable override to customize {providerName} settings for this project only.
-          Changes will not affect your global settings.
+          {t('providerOverride.enableOverrideHint', 'Enable override to customize {providerName} settings for this project only. Changes will not affect your global settings.').replace('{providerName}', providerName)}
         </div>
       )}
     </div>

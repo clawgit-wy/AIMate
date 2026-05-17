@@ -9,6 +9,7 @@ import {
 } from '@nimbalyst/runtime';
 import { trackerItemCountByTypeAtom } from '@nimbalyst/runtime/plugins/TrackerPlugin';
 import { trackerSyncConfigChangeAtom } from '../../../store/atoms/trackerSync';
+import { t } from '../../../i18n';
 import { AlphaBadge } from '../../common/AlphaBadge';
 import { useDialog } from '../../../contexts/DialogContext';
 import {
@@ -124,9 +125,9 @@ function SyncModeToggle({ mode, onChange }: {
   onChange: (mode: TrackerSyncMode) => void;
 }) {
   const options: { value: TrackerSyncMode; label: string }[] = [
-    { value: 'local', label: 'Local' },
-    { value: 'shared', label: 'Shared' },
-    { value: 'hybrid', label: 'Hybrid' },
+    { value: 'local', label: t('settings.trackerSyncLocal', 'Local') },
+    { value: 'shared', label: t('settings.trackerSyncShared', 'Shared') },
+    { value: 'hybrid', label: t('settings.trackerSyncHybrid', 'Hybrid') },
   ];
 
   return (

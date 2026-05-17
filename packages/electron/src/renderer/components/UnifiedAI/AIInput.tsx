@@ -8,6 +8,7 @@ import type { TokenUsageCategory } from '@nimbalyst/runtime/ai/server/types';
 import type { EffortLevel } from '../../utils/modelUtils';
 import { AttachmentPreviewList } from '../AgenticCoding/AttachmentPreviewList';
 import { ModeTag, AIMode } from './ModeTag';
+import { t } from '../../i18n';
 import { ModelSelector } from './ModelSelector';
 import { EffortLevelSelector } from './EffortLevelSelector';
 import { registerPendingVoiceCommandSetter } from './VoiceModeButton.tsx';
@@ -127,7 +128,7 @@ export const AIInput = forwardRef<AIInputRef, AIInputProps>(
     onCancel,
     disabled,
     isLoading,
-    placeholder = "Type your message... (Enter to send, Shift+Enter for new line, @ for files, @@ for sessions, / for commands)",
+    placeholder = t('session.typeMessagePlaceholder'),
     workspacePath,
     sessionId,
     onNavigateHistory,
@@ -1179,7 +1180,7 @@ export const AIInput = forwardRef<AIInputRef, AIInputProps>(
         <div
           className={`ai-chat-input-resize-handle absolute -top-[3px] left-0 right-0 h-1.5 cursor-row-resize z-10 before:content-[''] before:absolute before:top-0.5 before:left-0 before:right-0 before:h-0.5 before:transition-colors before:duration-150 ${isResizing ? 'before:bg-[var(--nim-primary)]' : ''} hover:before:bg-[var(--nim-primary)]`}
           onMouseDown={handleResizeMouseDown}
-          title="Drag to resize prompt box"
+          title={t('aiInput.dragToResize', 'Drag to resize prompt box')}
         />
 
         {/* Pending voice command with countdown */}
@@ -1336,8 +1337,8 @@ export const AIInput = forwardRef<AIInputRef, AIInputProps>(
                   console.log('[AIInput] Cancel button clicked, onCancel:', !!onCancel);
                   onCancel();
                 }}
-                title="Cancel request (Esc)"
-                aria-label="Cancel request"
+                title={t('aiInput.cancelRequestEsc', 'Cancel request (Esc)')}
+                aria-label={t('aiInput.cancelRequest', 'Cancel request')}
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1350,7 +1351,7 @@ export const AIInput = forwardRef<AIInputRef, AIInputProps>(
               onClick={handleSend}
               disabled={disabled || !value.trim() || processingAttachments.length > 0}
               title={processingAttachments.length > 0 ? "Processing attachments..." : "Send message (Enter)"}
-              aria-label="Send message"
+              aria-label={t('aiInput.sendMessage', 'Send message')}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2 8L14 2L11 14L8 9L2 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

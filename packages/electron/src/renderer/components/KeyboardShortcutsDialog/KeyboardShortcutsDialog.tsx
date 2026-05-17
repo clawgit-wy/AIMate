@@ -6,6 +6,7 @@ import {
   type RegisteredKeybinding,
 } from '../../extensions/commands/ExtensionCommandRegistry';
 import { getExtensionLoader } from '@nimbalyst/runtime';
+import { t } from '../../i18n';
 
 interface KeyboardShortcutsDialogProps {
   isOpen: boolean;
@@ -148,8 +149,8 @@ export function KeyboardShortcutsDialog({ isOpen, onClose }: KeyboardShortcutsDi
     {
       title: 'View',
       shortcuts: [
-        { label: 'Files Mode', shortcut: KeyboardShortcuts.view.filesMode }, // shared/KeyboardShortcuts.ts:42 - Cmd+E
-        { label: 'Agent Mode', shortcut: KeyboardShortcuts.view.agentMode }, // shared/KeyboardShortcuts.ts:43 - Cmd+K
+        { label: t('menu.filesMode'), shortcut: KeyboardShortcuts.view.filesMode }, // shared/KeyboardShortcuts.ts:42 - Cmd+E
+        { label: t('menu.agentMode'), shortcut: KeyboardShortcuts.view.agentMode }, // shared/KeyboardShortcuts.ts:43 - Cmd+K
         { label: 'Session Kanban View', shortcut: KeyboardShortcuts.window.kanbanView }, // shared/KeyboardShortcuts.ts:81 - Cmd+Shift+K
         { label: 'Toggle AI Chat Panel', shortcut: KeyboardShortcuts.view.toggleAIChat }, // shared/KeyboardShortcuts.ts:46 - Cmd+Shift+A
         { label: 'Toggle Bottom Panel', shortcut: KeyboardShortcuts.view.toggleBottomPanel }, // shared/KeyboardShortcuts.ts:47 - Cmd+J

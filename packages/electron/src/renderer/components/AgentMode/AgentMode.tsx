@@ -65,6 +65,7 @@ import { fetchSessionSharesAtom } from '../../store';
 import type { WorktreeCreateResult, SessionCreateResult } from '../../../shared/ipc/types';
 import { BlitzDialog } from '../BlitzDialog/BlitzDialog';
 import { MetaAgentMode } from '../MetaAgentMode/MetaAgentMode';
+import { t } from '../../i18n';
 
 export interface AgentModeRef {
   createNewSession: (initialDraft?: string) => Promise<string | undefined>;
@@ -1020,12 +1021,12 @@ export const AgentMode = forwardRef<AgentModeRef, AgentModeProps>(function Agent
     )
   ) : (
     <div className="agent-mode-empty flex flex-col items-center justify-center h-full gap-4 text-nim-muted">
-      <p className="m-0 text-sm">Select a session or create a new one to get started</p>
+      <p className="m-0 text-sm">{t('session.selectOrCreateSession')}</p>
       <button
         onClick={() => createNewSession()}
         className="agent-mode-new-button py-2 px-4 rounded-md border border-nim-border bg-nim-bg-secondary text-nim cursor-pointer text-sm transition-colors hover:bg-nim-bg-active"
       >
-        New Session
+        {t('session.newSession')}
       </button>
     </div>
   );

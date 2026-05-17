@@ -7,6 +7,7 @@
 
 import React from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { t } from '../../i18n';
 import { MaterialSymbol } from '@nimbalyst/runtime';
 import { ModelIdentifier } from '@nimbalyst/runtime/ai/server/types';
 import {
@@ -350,12 +351,11 @@ export const VoiceModePanel: React.FC<VoiceModePanelProps> = ({
     <div className="provider-panel flex flex-col">
       <div className="provider-panel-header mb-6 pb-4 border-b border-[var(--nim-border)]">
         <h3 className="provider-panel-title text-xl font-semibold leading-tight mb-2 text-[var(--nim-text)] flex items-center gap-2">
-          Voice Mode
+          {t('voiceMode.title', 'Voice Mode')}
           <AlphaBadge size="sm" />
         </h3>
         <p className="provider-panel-description text-sm leading-relaxed text-[var(--nim-text-muted)]">
-          Use OpenAI's Advanced Voice Mode to control Claude Code with your voice.
-          Speak naturally to give commands, and receive spoken responses.
+          {t('voiceMode.description', "Use OpenAI's Advanced Voice Mode to control Claude Code with your voice. Speak naturally to give commands, and receive spoken responses.")}
         </p>
       </div>
 
@@ -442,13 +442,13 @@ export const VoiceModePanel: React.FC<VoiceModePanelProps> = ({
       {enabled && hasOpenAIKey && (
         <>
           <div className="provider-panel-section mb-6">
-            <h4 className="provider-panel-section-title text-base font-medium mb-4 text-[var(--nim-text)]">Voice Settings</h4>
+            <h4 className="provider-panel-section-title text-base font-medium mb-4 text-[var(--nim-text)]">{t('voiceMode.voiceSettings', 'Voice Settings')}</h4>
 
             <div className="setting-item py-3">
               <div className="setting-text flex flex-col gap-0.5">
-                <span className="setting-name text-sm font-medium text-[var(--nim-text)]">Voice</span>
+                <span className="setting-name text-sm font-medium text-[var(--nim-text)]">{t('voiceMode.voiceModel', 'Voice')}</span>
                 <span className="setting-description text-xs text-[var(--nim-text-muted)]">
-                  Choose the voice for the assistant. Each voice has its own personality and tone.
+                  {t('voiceMode.voiceModelDesc', 'Choose the voice for the assistant. Each voice has its own personality and tone.')}
                 </span>
               </div>
               <div className="flex items-center gap-2 mt-2">
@@ -461,7 +461,7 @@ export const VoiceModePanel: React.FC<VoiceModePanelProps> = ({
                     <optgroup key={group.label} label={group.label}>
                       {group.voices.map((v) => (
                         <option key={v.id} value={v.id}>
-                          {v.name} - {v.description}
+                          {t(`voiceMode.${v.id}`, v.name)} - {v.description}
                         </option>
                       ))}
                     </optgroup>
@@ -475,17 +475,17 @@ export const VoiceModePanel: React.FC<VoiceModePanelProps> = ({
                       ? 'bg-[var(--nim-primary)] text-white'
                       : 'bg-[var(--nim-bg-secondary)] text-[var(--nim-text)]'
                   }`}
-                  title={isPreviewPlaying ? 'Stop preview' : 'Preview this voice'}
+                  title={isPreviewPlaying ? t('voiceMode.stopPreview', 'Stop preview') : t('voiceMode.previewVoice', 'Preview this voice')}
                 >
                   <MaterialSymbol icon={isPreviewPlaying ? 'stop' : 'play_arrow'} size={16} />
-                  {isPreviewPlaying ? 'Stop' : 'Preview'}
+                  {isPreviewPlaying ? t('voiceMode.stop', 'Stop') : t('voiceMode.preview', 'Preview')}
                 </button>
               </div>
               <p className="provider-panel-hint mt-2 text-xs text-[var(--nim-text-muted)]">
-                Preview plays a short sample using OpenAI's TTS API.
+                {t('voiceMode.previewHint', "Preview plays a short sample using OpenAI's TTS API.")}
                 {VOICE_OPTIONS.find(v => v.id === voice)?.realtimeOnly && (
                   <span className="text-[var(--nim-text-muted)]">
-                    {' '}This voice is Realtime-only; preview uses a similar voice.
+                    {' '}{t('voiceMode.realtimeOnlyHint', 'This voice is Realtime-only; preview uses a similar voice.')}
                   </span>
                 )}
               </p>
@@ -493,17 +493,17 @@ export const VoiceModePanel: React.FC<VoiceModePanelProps> = ({
           </div>
 
           <div className="provider-panel-section mb-6">
-            <h4 className="provider-panel-section-title text-base font-medium mb-4 text-[var(--nim-text)]">Turn Detection</h4>
+            <h4 className="provider-panel-section-title text-base font-medium mb-4 text-[var(--nim-text)]">{t('voiceMode.turnDetection', 'Turn Detection')}</h4>
             <p className="provider-panel-hint text-sm text-[var(--nim-text-muted)] mb-4">
-              Control how the assistant detects when you're speaking and when you're done.
+              {t('voiceMode.turnDetectionDesc', "Control how the assistant detects when you're speaking and when you're done.")}
             </p>
 
             {/* Mode Selection */}
             <div className="setting-item py-3 mb-4">
               <div className="setting-text flex flex-col gap-0.5">
-                <span className="setting-name text-sm font-medium text-[var(--nim-text)]">Input Mode</span>
+                <span className="setting-name text-sm font-medium text-[var(--nim-text)]">{t('voiceMode.inputMode', 'Input Mode')}</span>
                 <span className="setting-description text-xs text-[var(--nim-text-muted)]">
-                  Choose how voice input is captured
+                  {t('voiceMode.inputModeDesc', 'Choose how voice input is captured')}
                 </span>
               </div>
               <select
@@ -511,8 +511,8 @@ export const VoiceModePanel: React.FC<VoiceModePanelProps> = ({
                 onChange={(e) => handleTurnDetectionChange({ mode: e.target.value as 'server_vad' | 'push_to_talk' })}
                 className="mt-2 px-3 py-1.5 rounded border border-[var(--nim-border)] bg-[var(--nim-bg-secondary)] text-[var(--nim-text)]"
               >
-                <option value="server_vad">Voice Activity Detection (automatic)</option>
-                <option value="push_to_talk">Push to Talk (hold button)</option>
+                <option value="server_vad">{t('voiceMode.voiceActivityDetection', 'Voice Activity Detection (automatic)')}</option>
+                <option value="push_to_talk">{t('voiceMode.pushToTalk', 'Push to Talk (hold button)')}</option>
               </select>
             </div>
 
@@ -522,13 +522,13 @@ export const VoiceModePanel: React.FC<VoiceModePanelProps> = ({
                 {/* VAD Threshold */}
                 <div className="setting-item py-3 mb-4">
                   <div className="setting-text flex flex-col gap-0.5">
-                    <span className="setting-name text-sm font-medium text-[var(--nim-text)]">Voice Detection Sensitivity</span>
+                    <span className="setting-name text-sm font-medium text-[var(--nim-text)]">{t('voiceMode.voiceDetectionSensitivity', 'Voice Detection Sensitivity')}</span>
                     <span className="setting-description text-xs text-[var(--nim-text-muted)]">
-                      How sensitive the microphone is to your voice. Lower = more sensitive (picks up quiet speech), Higher = less sensitive (requires louder speech).
+                      {t('voiceMode.voiceDetectionSensitivityDesc', "How sensitive the microphone is to your voice. Lower = more sensitive (picks up quiet speech), Higher = less sensitive (requires louder speech).")}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 mt-2">
-                    <span className="text-xs text-[var(--nim-text-muted)]">Sensitive</span>
+                    <span className="text-xs text-[var(--nim-text-muted)]">{t('voiceMode.sensitive', 'Sensitive')}</span>
                     <input
                       type="range"
                       min="0"
@@ -537,7 +537,7 @@ export const VoiceModePanel: React.FC<VoiceModePanelProps> = ({
                       onChange={(e) => handleTurnDetectionChange({ vadThreshold: parseInt(e.target.value) / 100 })}
                       className="flex-1"
                     />
-                    <span className="text-xs text-[var(--nim-text-muted)]">Less sensitive</span>
+                    <span className="text-xs text-[var(--nim-text-muted)]">{t('voiceMode.lessSensitive', 'Less sensitive')}</span>
                     <span className="text-xs text-[var(--nim-text)] min-w-[36px]">
                       {Math.round((currentTurnDetection.vadThreshold || 0.5) * 100)}%
                     </span>
@@ -547,13 +547,13 @@ export const VoiceModePanel: React.FC<VoiceModePanelProps> = ({
                 {/* Silence Duration */}
                 <div className="setting-item py-3 mb-4">
                   <div className="setting-text flex flex-col gap-0.5">
-                    <span className="setting-name text-sm font-medium text-[var(--nim-text)]">Pause Before Processing</span>
+                    <span className="setting-name text-sm font-medium text-[var(--nim-text)]">{t('voiceMode.pauseBeforeProcessing', 'Pause Before Processing')}</span>
                     <span className="setting-description text-xs text-[var(--nim-text-muted)]">
-                      How long to wait after you stop speaking before processing your request. Shorter = faster response, Longer = more time for natural pauses.
+                      {t('voiceMode.pauseBeforeProcessingDesc', "How long to wait after you stop speaking before processing your request. Shorter = faster response, Longer = more time for natural pauses.")}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 mt-2">
-                    <span className="text-xs text-[var(--nim-text-muted)]">Faster</span>
+                    <span className="text-xs text-[var(--nim-text-muted)]">{t('voiceMode.faster', 'Faster')}</span>
                     <input
                       type="range"
                       min="200"
@@ -563,7 +563,7 @@ export const VoiceModePanel: React.FC<VoiceModePanelProps> = ({
                       onChange={(e) => handleTurnDetectionChange({ silenceDuration: parseInt(e.target.value) })}
                       className="flex-1"
                     />
-                    <span className="text-xs text-[var(--nim-text-muted)]">Slower</span>
+                    <span className="text-xs text-[var(--nim-text-muted)]">{t('voiceMode.slower', 'Slower')}</span>
                     <span className="text-xs text-[var(--nim-text)] min-w-[50px]">
                       {((currentTurnDetection.silenceDuration || 500) / 1000).toFixed(1)}s
                     </span>

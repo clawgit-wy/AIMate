@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { MaterialSymbol, getProviderIcon } from '@nimbalyst/runtime';
 import { useAlphaFeatures } from '../../hooks/useAlphaFeature';
 import { AlphaBadge } from '../common/AlphaBadge';
+import { t } from '../../i18n';
 
 export type SettingsCategory =
   | 'agent-permissions'
@@ -74,84 +75,80 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
 
   const categoryGroups: CategoryGroup[] = [
     {
-      title: 'Application',
+      title: t('settings.application', 'Application'),
       items: [
         {
           id: 'sync',
-          name: 'Account & Sync',
+          name: t('settings.accountAndSync', 'Account & Sync'),
           icon: <MaterialSymbol icon="account_circle" size={16} />,
         },
         {
           id: 'shared-links',
-          name: 'Shared Links',
+          name: t('settings.sharedLinks', 'Shared Links'),
           icon: <MaterialSymbol icon="link" size={16} />,
         },
         {
           id: 'notifications',
-          name: 'Notifications',
+          name: t('settings.notifications', 'Notifications'),
           icon: <MaterialSymbol icon="notifications" size={16} />,
         },
         {
           id: 'themes',
-          name: 'Themes',
+          name: t('settings.themes', 'Themes'),
           icon: <MaterialSymbol icon="palette" size={16} />,
         },
         {
           id: 'advanced',
-          name: 'Advanced',
+          name: t('settings.advanced', 'Advanced'),
           icon: <MaterialSymbol icon="settings" size={16} />,
         },
         {
           id: 'voice-mode',
-          name: 'Voice Mode',
+          name: t('settings.voiceMode', 'Voice Mode'),
           icon: <MaterialSymbol icon="mic" size={16} />,
           isAlpha: true,
         },
         {
           id: 'agent-features',
-          name: 'Agent Features',
+          name: t('settings.agentFeatures', 'Agent Features'),
           icon: <MaterialSymbol icon="science" size={16} />,
           isAlpha: true,
         },
 
         {
           id: 'beta-features',
-          name: 'Beta Features',
+          name: t('settings.betaFeatures', 'Beta Features'),
           icon: <MaterialSymbol icon="biotech" size={16} />,
           hidden: true,
         },
       ],
     },
     {
-      title: 'Agent Providers',
-      infoTooltip: `Agents run in loops against your files to produce work. 
-      
-The have full MCP support with file system access, multi-file operations, and session persistence.
-
-Best for complex coding tasks.`,
+      title: t('settings.agentProviders', 'Agent Providers'),
+      infoTooltip: t('settings.agentProvidersTooltip', `Agents run in loops against your files to produce work. \n\nThey have full MCP support with file system access, multi-file operations, and session persistence.\n\nBest for complex coding tasks.`),
       items: [
         {
           id: 'claude-code',
-          name: 'Claude Agent',
+          name: t('settings.claudeAgent', 'Claude Agent'),
           icon: getProviderIcon('claude-code', { size: 16 }),
           statusDot: getStatusDot('claude-code'),
         },
         {
           id: 'openai-codex',
-          name: 'OpenAI Codex',
+          name: t('settings.openaiCodex', 'OpenAI Codex'),
           icon: getProviderIcon('openai', { size: 16 }),
           statusDot: getStatusDot('openai-codex'),
         },
         {
           id: 'opencode',
-          name: 'OpenCode',
+          name: t('settings.openCode', 'OpenCode'),
           icon: getProviderIcon('opencode', { size: 16 }),
           statusDot: getStatusDot('opencode'),
           isAlpha: true,
         },
         {
           id: 'copilot-cli',
-          name: 'GitHub Copilot',
+          name: t('settings.githubCopilot', 'GitHub Copilot'),
           icon: <MaterialSymbol icon="terminal" size={16} />,
           statusDot: getStatusDot('copilot-cli'),
           isAlpha: true,
@@ -159,81 +156,77 @@ Best for complex coding tasks.`,
       ],
     },
     {
-      title: 'Chat Providers',
-      infoTooltip: `Chat mode is a quicker, more focused tool that is limited to reading and writing your currently open file.
-
-Uses direct API calls with files attached as context. Faster responses, simpler behavior. Includes local model support via LM Studio.
-
-Best for quick edits and tasks that do not require multi-file operations.`,
+      title: t('settings.chatProviders', 'Chat Providers'),
+      infoTooltip: t('settings.chatProvidersTooltip', `Chat mode is a quicker, more focused tool that is limited to reading and writing your currently open file.\n\nUses direct API calls with files attached as context. Faster responses, simpler behavior. Includes local model support via LM Studio.\n\nBest for quick edits and tasks that do not require multi-file operations.`),
       items: [
         {
           id: 'claude',
-          name: 'Claude Chat',
+          name: t('settings.claudeChat', 'Claude Chat'),
           icon: getProviderIcon('claude', { size: 16 }),
           statusDot: getStatusDot('claude'),
         },
         {
           id: 'openai',
-          name: 'OpenAI',
+          name: t('settings.openai', 'OpenAI'),
           icon: getProviderIcon('openai', { size: 16 }),
           statusDot: getStatusDot('openai'),
         },
         {
           id: 'lmstudio',
-          name: 'LM Studio',
+          name: t('settings.lmStudio', 'LM Studio'),
           icon: getProviderIcon('lmstudio', { size: 16 }),
           statusDot: getStatusDot('lmstudio'),
         },
       ],
     },
     {
-      title: 'Project',
+      title: t('settings.project', 'Project'),
       items: [
         {
           id: 'agent-permissions',
-          name: 'Agent Permissions',
+          name: t('settings.agentPermissions', 'Agent Permissions'),
           icon: <MaterialSymbol icon="shield" size={16} />,
         },
       ],
     },
     ...(alphaFeatures['collaboration'] ? [{
-      title: 'Collaboration',
+      title: t('settings.collaboration', 'Collaboration'),
       items: [
         {
           id: 'team' as SettingsCategory,
-          name: 'Team',
+          name: t('settings.team', 'Team'),
           icon: <MaterialSymbol icon="group" size={16} />,
           isAlpha: true,
         },
         {
           id: 'tracker-config' as SettingsCategory,
-          name: 'Trackers',
+          name: t('settings.trackers', 'Trackers'),
           icon: <MaterialSymbol icon="assignment" size={16} />,
           isAlpha: true,
         },
       ],
     }] : []),
     {
-      title: 'Extensions',
+      title: t('settings.extensions', 'Extensions'),
       items: [
         {
           id: 'marketplace',
-          name: 'Marketplace',
+          name: t('settings.marketplace', 'Marketplace'),
           icon: <MaterialSymbol icon="storefront" size={16} />,
         },
         {
           id: 'installed-extensions',
-          name: 'Installed',
+          name: t('settings.installed', 'Installed'),
           icon: <MaterialSymbol icon="extension" size={16} />,
         },
         {
           id: 'claude-plugins',
-          name: 'Claude Plugins',
+          name: t('settings.claudePlugins', 'Claude Plugins'),
           icon: <MaterialSymbol icon="widgets" size={16} />,
         },
         {
           id: 'mcp-servers',
-          name: 'MCP Servers',
+          name: t('settings.mcpServers', 'MCP Servers'),
           icon: <MaterialSymbol icon="dns" size={16} />,
         },
       ],

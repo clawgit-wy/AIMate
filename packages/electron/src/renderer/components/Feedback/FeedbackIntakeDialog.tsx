@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { usePostHog } from 'posthog-js/react';
 import { MaterialSymbol } from '@nimbalyst/runtime';
+import { useI18n } from '../../i18n';
 
 export type FeedbackKind = 'bug' | 'feature';
 
@@ -30,6 +31,7 @@ export const FeedbackIntakeDialog: React.FC<FeedbackIntakeDialogProps> = ({
   onClose,
   onLaunch,
 }) => {
+  const { t } = useI18n();
   const posthog = usePostHog();
   const [selectedKind, setSelectedKind] = useState<FeedbackKind | null>(null);
   const [mayGatherLogs, setMayGatherLogs] = useState(true);
@@ -89,7 +91,7 @@ export const FeedbackIntakeDialog: React.FC<FeedbackIntakeDialogProps> = ({
           type="button"
           className="absolute top-3.5 right-3.5 z-[1] flex h-8 w-8 items-center justify-center rounded-md border-none bg-transparent text-[var(--nim-text-muted)] transition-colors duration-150 hover:bg-[var(--nim-bg-tertiary)] hover:text-[var(--nim-text)]"
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t('common.close', 'Close')}
           data-testid="feedback-intake-close"
         >
           <MaterialSymbol icon="close" size={20} />
@@ -104,8 +106,7 @@ export const FeedbackIntakeDialog: React.FC<FeedbackIntakeDialogProps> = ({
               Send better feedback with your Agent
             </h2>
             <p className="mt-2 max-w-[42ch] text-[13px] leading-relaxed text-[var(--nim-text-muted)]">
-              Use your Agent to improve your bug reports and feature requests. Your agent will help draft it, and you
-              approve everything before GitHub opens.
+              {t('feedback.useAgentDescription', 'Use your Agent to improve your bug reports and feature requests. Your agent will help draft it, and you approve everything before GitHub opens.')}
             </p>
           </div>
 
@@ -125,10 +126,10 @@ export const FeedbackIntakeDialog: React.FC<FeedbackIntakeDialogProps> = ({
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[rgba(239,68,68,0.12)] text-[var(--nim-error)]">
                     <MaterialSymbol icon="bug_report" size={20} />
                   </span>
-                  <span className="text-[14px] font-semibold leading-none">Bug report</span>
+                  <span className="text-[14px] font-semibold leading-none">{t('feedback.bugReport', 'Bug report')}</span>
                 </div>
                 <p className="m-0 text-[12px] leading-relaxed">
-                  Broken behavior, crashes, sync issues, or regressions.
+                  {t('feedback.bugReportDesc', 'Broken behavior, crashes, sync issues, or regressions.')}
                 </p>
               </button>
 
@@ -146,10 +147,10 @@ export const FeedbackIntakeDialog: React.FC<FeedbackIntakeDialogProps> = ({
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[rgba(245,158,11,0.14)] text-[var(--nim-warning)]">
                     <MaterialSymbol icon="lightbulb" size={20} />
                   </span>
-                  <span className="text-[14px] font-semibold leading-none">Feature request</span>
+                  <span className="text-[14px] font-semibold leading-none">{t('feedback.featureRequest', 'Feature request')}</span>
                 </div>
                 <p className="m-0 text-[12px] leading-relaxed">
-                  Missing capabilities, workflow improvements, or UX changes.
+                  {t('feedback.featureRequestDesc', 'Missing capabilities, workflow improvements, or UX changes.')}
                 </p>
               </button>
             </div>
@@ -172,12 +173,10 @@ export const FeedbackIntakeDialog: React.FC<FeedbackIntakeDialogProps> = ({
                       />
                       <div className="min-w-0 flex-1">
                         <p className="m-0 text-[13px] font-medium leading-snug text-[var(--nim-text)]">
-                          Include logs and environment details
+                          {t('feedback.includeLogs', 'Include logs and environment details')}
                         </p>
                         <p className="mt-1.5 text-[12px] leading-relaxed text-[var(--nim-text-muted)]">
-                          Logs may include file paths, workspace names, and error details. The
-                          assistant anonymizes them first, and you review the final report before it
-                          is posted.
+                          {t('feedback.includeLogsDesc', 'Logs may include file paths, workspace names, and error details. The assistant anonymizes them first, and you review the final report before it is posted.')}
                         </p>
                       </div>
                     </div>
@@ -200,11 +199,10 @@ export const FeedbackIntakeDialog: React.FC<FeedbackIntakeDialogProps> = ({
                       />
                       <div className="min-w-0 flex-1">
                         <p className="m-0 text-[13px] font-medium leading-snug text-[var(--nim-text)]">
-                          Explore the idea with a UX mockup first
+                          {t('feedback.exploreWithMockup', 'Explore the idea with a UX mockup first')}
                         </p>
                         <p className="mt-1.5 text-[12px] leading-relaxed text-[var(--nim-text-muted)]">
-                          Best for interface or workflow changes. The assistant can sketch a mockup,
-                          refine it with you, and include that visual direction in the request.
+                          {t('feedback.exploreWithMockupDesc', 'Best for interface or workflow changes. The assistant can sketch a mockup, refine it with you, and include that visual direction in the request.')}
                         </p>
                       </div>
                     </div>
@@ -226,10 +224,10 @@ export const FeedbackIntakeDialog: React.FC<FeedbackIntakeDialogProps> = ({
             >
               <span>
                 {selectedKind === 'bug'
-                  ? 'Start bug report'
+                  ? t('feedback.startBugReport', 'Start bug report')
                   : selectedKind === 'feature'
-                    ? 'Start feature request'
-                    : 'Choose a type to continue'}
+                    ? t('feedback.startFeatureRequest', 'Start feature request')
+                    : t('feedback.chooseType', 'Choose a type to continue')}
               </span>
               <MaterialSymbol
                 icon="arrow_forward"
@@ -242,7 +240,7 @@ export const FeedbackIntakeDialog: React.FC<FeedbackIntakeDialogProps> = ({
 
         <div className="border-t border-[var(--nim-border)] bg-[var(--nim-bg-secondary)] px-8 pt-4 pb-4.5">
           <p className="m-0 mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--nim-text-faint)]">
-            Other ways to reach us
+            {t('feedback.otherWays', 'Other ways to reach us')}
           </p>
           <ul className="m-0 flex list-none flex-col gap-1 p-0">
             <li>
