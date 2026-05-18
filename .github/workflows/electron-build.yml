@@ -753,7 +753,7 @@ jobs:
       # Transitional bridge for legacy alpha installs that still read the
       # Cloudflare R2 feed. Disable after the one transition release ships.
       - name: Upload to Cloudflare R2
-        if: env.LEGACY_ALPHA_TRANSITION_R2_UPLOAD == 'true'
+        if: env.LEGACY_ALPHA_TRANSITION_R2_UPLOAD == 'true' && secrets.CLOUDFLARE_ACCOUNT_ID != ''
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
