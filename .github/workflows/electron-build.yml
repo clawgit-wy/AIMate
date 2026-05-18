@@ -753,12 +753,18 @@ jobs:
       # Transitional bridge for legacy alpha installs that still read the
       # Cloudflare R2 feed. Disable after the one transition release ships.
       - name: Upload to Cloudflare R2
-        if: env.LEGACY_ALPHA_TRANSITION_R2_UPLOAD == 'true' && secrets.CLOUDFLARE_ACCOUNT_ID != ''
+        if: env.LEGACY_ALPHA_TRANSITION_R2_UPLOAD == 'true'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          # Skip if Cloudflare credentials are not configured
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || [ -z "$AWS_ACCESS_KEY_ID" ]; then
+            echo "::warning::Cloudflare R2 credentials not configured, skipping R2 upload"
+            exit 0
+          fi
+
           # Install AWS CLI
           pip install awscli
 
