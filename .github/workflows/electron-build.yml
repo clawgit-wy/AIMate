@@ -658,26 +658,28 @@ jobs:
           } > release-files/RELEASE_NOTES.md
 
           # Extract public release notes from CHANGELOG.md
-          # This gets the most recent release section (not [Unreleased])
-          VERSION=${GITHUB_REF#refs/tags/v}
-
-          # Get the release section from CHANGELOG
-          awk -v version="$VERSION" '
-            /^## \['"$VERSION"'\]/ { found=1; next }
-            found && /^## \[/ { exit }
-            found && /^### (Added|Changed|Fixed|Removed)/ {
-              category=$0
-              next
-            }
-            found && /^- / && category ~ /Added/ {
-              sub(/^- /, "")
-              if (!seen_added_header) {
-                print "### New Features"
-                print ""
-                seen_added_header=1
+          # For tag pushes, extract the version from tag name
+          # For branch pushes (like aimate-core), use package.json version
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            
+            # Get the release section from CHANGELOG
+            awk -v version="$VERSION" '
+              /^## \['"$VERSION"'\]/ { found=1; next }
+              found && /^## \[/ { exit }
+              found && /^### (Added|Changed|Fixed|Removed)/ {
+                category=$0
+                next
               }
-              print "- " $0
-            }
+              found && /^- / && category ~ /Added/ {
+                sub(/^- /, "")
+                if (!seen_added_header) {
+                  print "### New Features"
+                  print ""
+                  seen_added_header=1
+                }
+                print "- " $0
+              }
             found && /^- / && category ~ /Changed/ {
               sub(/^- /, "")
               if (!seen_changed_header) {
@@ -699,6 +701,23 @@ jobs:
               print "- " $0
             }
           ' CHANGELOG.md > release-files/PUBLIC_RELEASE_NOTES.md
+          else
+            # For branch pushes, use package.json version and generate simple notes
+            PACKAGE_VERSION=$(node -p "require('./packages/electron/package.json').version")
+            VERSION="${PACKAGE_VERSION}-dev.${GITHUB_SHA::7}"
+            
+            # Generate simple release notes from recent commits
+            {
+              echo "### Development Build"
+              echo ""
+              echo "Version: ${PACKAGE_VERSION}"
+              echo "Commit: ${GITHUB_SHA::7}"
+              echo "Branch: ${GITHUB_REF#refs/heads/}"
+              echo ""
+              echo "Recent changes:"
+              git log --oneline -10 --pretty=format:"- %s" || echo "- Development build"
+            } > release-files/PUBLIC_RELEASE_NOTES.md
+          fi
 
           # If no public release notes were generated, fall back to basic message
           if [ ! -s release-files/PUBLIC_RELEASE_NOTES.md ]; then
