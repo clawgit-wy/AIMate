@@ -170,8 +170,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "nimbalyst",
-        "repo": "nimbalyst",
+        "owner": "clawgit-wy",
+        "repo": "AIMate",
         "releaseType": "release"
       }
     ],

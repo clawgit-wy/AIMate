@@ -662,50 +662,14 @@ jobs:
           # For branch pushes (like aimate-core), use package.json version
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
-            
+
             # Get the release section from CHANGELOG
-            awk -v version="$VERSION" '
-              /^## \['"$VERSION"'\]/ { found=1; next }
-              found && /^## \[/ { exit }
-              found && /^### (Added|Changed|Fixed|Removed)/ {
-                category=$0
-                next
-              }
-              found && /^- / && category ~ /Added/ {
-                sub(/^- /, "")
-                if (!seen_added_header) {
-                  print "### New Features"
-                  print ""
-                  seen_added_header=1
-                }
-                print "- " $0
-              }
-            found && /^- / && category ~ /Changed/ {
-              sub(/^- /, "")
-              if (!seen_changed_header) {
-                print ""
-                print "### Improvements"
-                print ""
-                seen_changed_header=1
-              }
-              print "- " $0
-            }
-            found && /^- / && category ~ /Fixed/ {
-              sub(/^- /, "")
-              if (!seen_fixed_header) {
-                print ""
-                print "### Fixed"
-                print ""
-                seen_fixed_header=1
-              }
-              print "- " $0
-            }
-          ' CHANGELOG.md > release-files/PUBLIC_RELEASE_NOTES.md
+            awk -v version="$VERSION" '/^## \['"$version"'\]/ { found=1; next } found && /^## \[/ { exit } found && /^### (Added|Changed|Fixed|Removed)/ { category=$0; next } found && /^- / && category ~ /Added/ { sub(/^- /, ""); if (!seen_added_header) { print "### New Features"; print ""; seen_added_header=1; } print "- " $0 } found && /^- / && category ~ /Changed/ { sub(/^- /, ""); if (!seen_changed_header) { print ""; print "### Improvements"; print ""; seen_changed_header=1; } print "- " $0 } found && /^- / && category ~ /Fixed/ { sub(/^- /, ""); if (!seen_fixed_header) { print ""; print "### Fixed"; print ""; seen_fixed_header=1; } print "- " $0 }' CHANGELOG.md > release-files/PUBLIC_RELEASE_NOTES.md
           else
             # For branch pushes, use package.json version and generate simple notes
             PACKAGE_VERSION=$(node -p "require('./packages/electron/package.json').version")
             VERSION="${PACKAGE_VERSION}-dev.${GITHUB_SHA::7}"
-            
+
             # Generate simple release notes from recent commits
             {
               echo "### Development Build"
@@ -817,14 +781,12 @@ jobs:
           echo "✅ Release $VERSION complete!"
           echo ""
           echo "📦 Release published on GitHub Releases"
-          echo "   URL: https://github.com/nimbalyst/nimbalyst/releases/tag/$VERSION"
-          fi
+          echo "   URL: https://github.com/clawgit-wy/AIMate/releases/tag/$VERSION"
           if [[ "${{ inputs.create_github_release }}" == "true" ]]; then
             echo "🚀 GitHub release promoted from prerelease to stable:"
-            echo "   https://github.com/nimbalyst/nimbalyst/releases/tag/$VERSION"
+            echo "   https://github.com/clawgit-wy/AIMate/releases/tag/$VERSION"
           else
-            echo "ℹ️  The GitHub release is still marked as a prerelease"
-            echo "   To promote it to stable, re-run the workflow with create_github_release=true"
+            echo "ℹ️  The GitHub release is published as stable release"
           fi
 
       - name: Notify Slack - Release Published
